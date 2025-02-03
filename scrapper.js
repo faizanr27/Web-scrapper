@@ -31,7 +31,7 @@ async function scrape(url) {
 
       // Define custom styles
       const customClass = 'custom-style';
-      const customStyles = 'font-family: Arial, sans-serif; line-height: 1.5; color: #333;';
+      const customStyles = 'font-family: Arial, sans-serif; line-height: 1.5; color: #333; background-color: white;';
 
       // Iterate through each element
       elements.forEach((el) => {
