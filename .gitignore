@@ -2,3 +2,5 @@ output.html
 node_modules
 scape.js
 index.js
+*.png
+googleSearch.js
