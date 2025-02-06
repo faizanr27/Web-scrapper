@@ -1,12 +1,15 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 import fs from "fs";
 
-async function scrape(url) {
+async function giveWebsiteInfo(url) {
+  let browser = null;
   let page = null;
+  const content = [];
+
   try {
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: true, // Headless mode for speed
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
@@ -17,7 +20,9 @@ async function scrape(url) {
     await page.setRequestInterception(true);
     page.on("request", (req) => {
       if (
-        ["stylesheet", "font", "media", "other"].includes(req.resourceType()) || req.url().includes('cookie') || req.url().includes('consent')
+        ["stylesheet", "font", "media", "other"].includes(req.resourceType()) ||
+        req.url().includes("cookie") ||
+        req.url().includes("consent")
       ) {
         req.abort();
       } else {
@@ -26,27 +31,21 @@ async function scrape(url) {
     });
 
     await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
-    const content = [];
 
     // Extract text and images in order
     const extractedData = await page.evaluate(() => {
-      // Select all relevant elements
       let elements = document.body.querySelectorAll(
         "p, h1, h2, h3, h4, h5, h6, pre, a, img, ul, ol, li, header, code, blockquote"
       );
       let result = [];
-
-      // Define custom styles
       const customClass = "custom-style";
       const customStyles =
         "font-family: Arial, sans-serif; line-height: 1.5; color: #333;";
 
-      elements = Array.from(elements).filter(el => !el.closest("footer"));
-      elements = Array.from(elements).filter(el => !el.closest("nav"));
+      elements = Array.from(elements).filter((el) => !el.closest("footer"));
+      elements = Array.from(elements).filter((el) => !el.closest("nav"));
 
-      // Iterate through each element
       elements.forEach((el) => {
-
         // Process each element based on its tag name
         if (el.tagName === "P") {
           result.push(
@@ -77,7 +76,6 @@ async function scrape(url) {
             `<h6 class="${customClass}" style="${customStyles}">${el.innerText}</h6>`
           );
         } else if (el.tagName === "PRE") {
-          // Check if there's a <code> element inside the <pre>
           let codeElement = el.querySelector("code");
           if (codeElement) {
             result.push(
@@ -88,7 +86,6 @@ async function scrape(url) {
               `<pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">${el.innerText}</pre>`
             );
           }
-
         } else if (el.tagName === "A") {
           result.push(
             `<a class="${customClass}" style="${customStyles}" href="${el.href}" target="_blank">${el.innerText}</a>`
@@ -119,7 +116,6 @@ async function scrape(url) {
             `<img src="${el.src}" alt="image" style="max-width:100%"/>`
           );
         } else if (el.tagName === "UL" || el.tagName === "OL") {
-          // Handle lists
           let listItems = el.querySelectorAll("li");
           let listContent = Array.from(listItems)
             .map(
@@ -134,37 +130,47 @@ async function scrape(url) {
       });
 
       const title = document.title;
-			const body = document.body.innerText;
-      const imageUrls = Array.from(document.querySelectorAll('img')).map((img) => img.src);
-			return {result1:{ title, body, imageUrls }, result2:result.join("")};
+      const body = document.body.innerText;
+      const imageUrls = Array.from(document.querySelectorAll("img")).map(
+        (img) => img.src
+      );
+
+      return { result1: { title, body, imageUrls }, result2: result.join("") };
     });
 
-
     const htmlContent = `
-    <html>
-    <head><title>Scraped Data</title></head>
-    <body style="font-family:sans-serif; padding:20px;">
-      <h2>Extracted Content</h2>
-      ${extractedData.result2}
-    </body>
-    </html>
-  `;
+      <html>
+      <head><title>Scraped Data</title></head>
+      <body style="font-family:sans-serif; padding:20px;">
+        ${extractedData.result2}
+      </body>
+      </html>
+    `;
 
     fs.writeFileSync("output.html", htmlContent);
     content.push(extractedData.result1);
     console.log("✅ Scraped content saved to output.html");
-    return content
+    return content;
 
   } catch (error) {
+    console.error("Error:", error.message);
     return { error: error.message };
   } finally {
     if (page) {
-      await page.close();
+      try {
+        await page.close();
+      } catch (err) {
+        console.error("❌ Error closing page:", err.message);
+      }
+    }
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (err) {
+        console.error("❌ Error closing browser:", err.message);
+      }
     }
   }
 }
 
-(async () => {
-  const websiteData = await scrape("https://faizan-raza.vercel.app/");
-  console.log("Extracted Data:", websiteData);
-})();
+export default giveWebsiteInfo;
