@@ -1,12 +1,14 @@
-import puppeteer from 'puppeteer';
-import fs from 'fs';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+puppeteer.use(StealthPlugin());
+import fs from "fs";
 
 async function scrape(url) {
   let page = null;
   try {
     const browser = await puppeteer.launch({
-      headless: true,  // Headless mode for speed
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      headless: true, // Headless mode for speed
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     page = await browser.newPage();
@@ -14,7 +16,9 @@ async function scrape(url) {
     // Block unnecessary resources (images are needed, so don't block them)
     await page.setRequestInterception(true);
     page.on("request", (req) => {
-      if (["stylesheet", "font", "media", "other"].includes(req.resourceType())) {
+      if (
+        ["stylesheet", "font", "media", "other"].includes(req.resourceType()) || req.url().includes('cookie') || req.url().includes('consent')
+      ) {
         req.abort();
       } else {
         req.continue();
@@ -22,20 +26,26 @@ async function scrape(url) {
     });
 
     await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
+    const content = [];
 
     // Extract text and images in order
     const extractedData = await page.evaluate(() => {
       // Select all relevant elements
-      let elements = document.body.querySelectorAll("p, h1, h2, h3, h4, h5, h6, pre, a, img, ul, ol, li, header, code, blockquote");
+      let elements = document.body.querySelectorAll(
+        "p, h1, h2, h3, h4, h5, h6, pre, a, img, ul, ol, li, header, code, blockquote"
+      );
       let result = [];
 
       // Define custom styles
-      const customClass = 'custom-style';
-      const customStyles = 'font-family: Arial, sans-serif; line-height: 1.5; color: #333; background-color: white;';
+      const customClass = "custom-style";
+      const customStyles =
+        "font-family: Arial, sans-serif; line-height: 1.5; color: #333;";
+
+      elements = Array.from(elements).filter(el => !el.closest("footer"));
+      elements = Array.from(elements).filter(el => !el.closest("nav"));
 
       // Iterate through each element
       elements.forEach((el) => {
-        // // Skip processing if the element is already inside a processed parent (e.g., <li> inside <ul>)
 
         // Process each element based on its tag name
         if (el.tagName === "P") {
@@ -70,17 +80,15 @@ async function scrape(url) {
           // Check if there's a <code> element inside the <pre>
           let codeElement = el.querySelector("code");
           if (codeElement) {
-            // If <code> exists, use its content
             result.push(
-              `<pre style="color: #d1d5db; background-color: #00000080; overflow-x: auto;"><code class="${customClass}" style="${customStyles}">${codeElement.innerText}</code></pre>`
+              `<pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);"><code class="language-shell">${codeElement.innerText}</code></pre>`
+            );
+          } else {
+            result.push(
+              `<pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">${el.innerText}</pre>`
             );
           }
-          // } else {
-          //   // If no <code> element, use the <pre> content directly
-          //   result.push(
-          //     `<pre class="${customClass}" style="${customStyles}">${el.innerText}</pre>`
-          //   );
-          // }
+
         } else if (el.tagName === "A") {
           result.push(
             `<a class="${customClass}" style="${customStyles}" href="${el.href}" target="_blank">${el.innerText}</a>`
@@ -125,28 +133,27 @@ async function scrape(url) {
         }
       });
 
-      return result.join("");
+      const title = document.title;
+			const body = document.body.innerText;
+      const imageUrls = Array.from(document.querySelectorAll('img')).map((img) => img.src);
+			return {result1:{ title, body, imageUrls }, result2:result.join("")};
     });
-    // extractedData.forEach((item) => {
-    //   if (item.type === "text") {
-    //     console.log("📝 Text:", item.content);
-    //   } else {
-    //     console.log("🖼️ Image:", item.src);
-    //   }
-    // });
+
 
     const htmlContent = `
     <html>
     <head><title>Scraped Data</title></head>
     <body style="font-family:sans-serif; padding:20px;">
       <h2>Extracted Content</h2>
-      ${extractedData}
+      ${extractedData.result2}
     </body>
     </html>
   `;
 
-  fs.writeFileSync("output.html", htmlContent);
-  console.log("✅ Scraped content saved to output.html");
+    fs.writeFileSync("output.html", htmlContent);
+    content.push(extractedData.result1);
+    console.log("✅ Scraped content saved to output.html");
+    return content
 
   } catch (error) {
     return { error: error.message };
@@ -158,6 +165,6 @@ async function scrape(url) {
 }
 
 (async () => {
-  await scrape("https://www.freecodecamp.org/news/web-scraping-in-javascript-with-puppeteer/");
-  // console.log("Extracted Data:", JSON.stringify(websiteData, null, 2));
+  const websiteData = await scrape("https://faizan-raza.vercel.app/");
+  console.log("Extracted Data:", websiteData);
 })();
