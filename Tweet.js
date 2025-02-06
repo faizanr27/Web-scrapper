@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import fs from 'fs/promises';
 puppeteer.use(StealthPlugin());
 
 async function giveTweetInfo(link) {
@@ -28,6 +29,10 @@ async function giveTweetInfo(link) {
     const username=await page.$eval('div[data-testid="User-Name"]',el=>el.innerText).catch(()=>"N/A")
 
     await browser.close();
+    const finalText = `UserName: ${username}\n\nTweet: ${tweet}`;
+    await fs.writeFile('Tweet.txt', finalText, 'utf-8');
+    console.log("Transcript saved successfully.");
+
     return {description:tweet,creatorName:username}
 }
 

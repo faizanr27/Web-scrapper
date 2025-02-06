@@ -1,0 +1,107 @@
+Faizan Raza
+
+FR
+☰
+Home
+Skills
+Projects
+Contact
+×
+Home
+Skills
+Projects
+Contact
+HI, I am Faizan
+Front-End Developer
+
+I am a passionate developer dedicated to building high-quality, scalable web applications.
+
+Download CV
+Skills
+Languages
+C
+JavaScript
+HTML
+CSS
+SQL
+Frameworks
+React
+Node.js
+Express
+Next.js
+Mongoose
+Tailwind CSS
+Dev Tools
+Git
+GitHub
+VS Code
+Firebase
+Vercel
+MongoDB
+PostgreSQL
+Projects
+Hive Mind
+
+React , Typescript, TailwindCSS, Node.js, MongoDb, Express.js, Mongoose
+
+Your personal knowledge hub to store, organize, and retrieve ideas effortlessly.Easily categorize notes, ideas, and files for quick access.
+
+LiveGitHub
+Dev Blog
+
+React, TailwindCSS, Node.js, MongoDb, Express.js, Mongoose
+
+FullStack Blog App with minimalistic ui.
+
+LiveGitHub
+Shortsy
+
+React.js , TailwindCSS, Shadcn/ui, Node.js , MongoDb , Express.js, Mongoose
+
+The URL shortener is a full-stack app that offers secure URL shortening with JWT for authentication and bcrypt for password hashing. It uses MongoDB as the database and features a clean interface with Shadcn UI.
+
+LiveGitHub
+Echo landing page
+
+React, Tailwind CSS, Framer motion, shadcn
+
+Landing page for Echo an http client for terminal
+
+LiveGitHub
+Portfolio Website
+
+React, Tailwind CSS, Framer motion
+
+Showcases my projects and skills with a clean, modern design . Utilizes Tailwind CSS for responsive styling
+
+LiveGitHub
+Food Facts
+
+React js, Tailwind CSS, OpenFoodFacts API
+
+This web application allows users to search for product details using the OpenFoodFacts API and provides a paginated view of product lists. It displays detailed information about each product, such as ingredients, nutrition facts, and labels.
+
+LiveGitHub
+Blogr Landing Page
+
+React, CSS, JavaScript
+
+This project is a responsive landing page built using React with custom CSS for stylingThe page is fully responsive and optimized for different screen sizes, from mobile to desktop.
+
+LiveGitHub
+Campus Connect
+
+React, Firebase
+
+CampusConnect is a web-based application made to help students manage shared resources, plan group activities, and develop effective communication when working together on academic projects,with the creation of a centralized platform that promotes organization, communication, and resource sharing.
+
+GitHub
+Contact Me
+
+Feel free to reach out to me through any of the platforms below or send me an email.
+
+Email Me
+
+© 2025 Faizan Raza. All rights reserved.
+
+https://faizan-raza.vercel.app/assets/hive-0AW1js9W.png,https://faizan-raza.vercel.app/assets/Devb-aafmcnD6.png,https://faizan-raza.vercel.app/assets/urlss-B_srpPTN.png,https://faizan-raza.vercel.app/assets/echo-CZl8dzKD.png,https://faizan-raza.vercel.app/assets/project4-Bd0zt1na.png,https://faizan-raza.vercel.app/assets/foodfacts-D2kDLA2v.png,https://faizan-raza.vercel.app/assets/project2-C6qcJYC1.png,https://faizan-raza.vercel.app/assets/project3-D4MavOFH.webp

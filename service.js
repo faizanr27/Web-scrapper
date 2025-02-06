@@ -32,7 +32,7 @@ async function processUrl(url) {
 const urls = [
     "https://x.com/__faizanr__/status/1885052479689429001",
     "https://youtu.be/G9VbtcsPKT0?si=4bm2AmUj6dnz_NIY",
-    "https://hacktogsoc.vercel.app/roadmap"
+    "https://faizan-raza.vercel.app"
 ];
 
 // Process all URLs dynamically

@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
-import fs from "fs";
+import fs from "fs/promises";
 
 async function giveWebsiteInfo(url) {
   let browser = null;
@@ -147,8 +147,17 @@ async function giveWebsiteInfo(url) {
       </html>
     `;
 
-    fs.writeFileSync("output.html", htmlContent);
+    await fs.writeFile("output.html", htmlContent);
     content.push(extractedData.result1);
+
+    try {
+      const textContent = `${extractedData.result1.title}\n\n${extractedData.result1.body}\n\n${extractedData.result1.imageUrls}`;
+      await fs.writeFile('webpage.txt', textContent, 'utf-8');
+      console.log("Plain text with title saved successfully.");
+    } catch (error) {
+      console.error("Error saving file:", error);
+    }
+
     console.log("✅ Scraped content saved to output.html");
     return content;
 
