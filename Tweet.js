@@ -25,13 +25,13 @@ async function giveTweetInfo(link) {
 
     await page.waitForSelector('div[data-testid="tweetText"]', {visible: true})
     await page.waitForSelector('div[data-testid="User-Name"]', {visible: true})
-    const tweet=await page.$eval('div[data-testid="tweetText"]',el=>el.innerText).catch(()=>"N/A")
+    const tweet=await page.$eval('div[data-testid="tweetText"]',el=>el.textContent).catch(()=>"N/A")
     const username=await page.$eval('div[data-testid="User-Name"]',el=>el.innerText).catch(()=>"N/A")
 
     await browser.close();
     const finalText = `UserName: ${username}\n\nTweet: ${tweet}`;
     await fs.writeFile('Tweet.txt', finalText, 'utf-8');
-    console.log("Transcript saved successfully.");
+    console.log("Tweet saved successfully.");
 
     return {description:tweet,creatorName:username}
 }

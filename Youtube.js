@@ -7,7 +7,7 @@ puppeteer.use(StealthPlugin());
 
 async function giveYoutubeInfo(link) {
     const browser = await puppeteer.launch({
-        headless: false, // Set to true for headless mode
+        headless: true, // Set to true for headless mode
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -47,6 +47,12 @@ async function giveYoutubeInfo(link) {
             return document.querySelector("#description-inline-expander > yt-attributed-string > span > span:nth-child(1)")?.textContent.trim() || "N/A";
         });
 
+        if (description === "N/A") {
+            description = await page.evaluate(() => {
+                return document.querySelector("meta[name='description']")?.content || "N/A";
+            });
+        }
+
         console.log("Video Description:", description);
         await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -54,6 +60,9 @@ async function giveYoutubeInfo(link) {
         try {
             await page.waitForSelector('#primary-button', { timeout: 5000 });
             console.log("Found Transcript Button");
+
+            await page.evaluate(() => window.scrollBy(0, 500));
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             await page.evaluate(() => {
                 document.querySelector('#primary-button > ytd-button-renderer > yt-button-shape > button')?.click();
@@ -74,7 +83,7 @@ async function giveYoutubeInfo(link) {
             )
         );
 
-        const finalText = `Title: ${title}\n\nDescription: ${description}\n\nTranscript:\n${content.join('\n')}`;
+        const finalText = `Title: ${title}\n\nDescription: ${description}\n\nTranscript:\n${content}`;
         await fs.writeFile('transcript.txt', finalText, 'utf-8');
         console.log("Transcript saved successfully.");
 

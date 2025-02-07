@@ -46,12 +46,52 @@ async function giveWebsiteInfo(url) {
       elements = Array.from(elements).filter((el) => !el.closest("nav"));
 
       elements.forEach((el) => {
-        // Process each element based on its tag name
-        if (el.tagName === "P") {
+        const isInsideBlockquote = el.closest("blockquote");
+        if (el.tagName === "BLOCKQUOTE") {
+          let textContent = Array.from(el.childNodes)
+            .filter(node => node.nodeType === 3) // Get only text nodes, ignoring nested elements
+            .map(node => node.textContent.trim())
+            .join(" ");
+
+          if (textContent) {
+            let codeElement = el.querySelector("p");
+          if (codeElement) {
+            result.push(
+              `<blockquote class="${customClass}" style="${customStyles};
+              font-weight: 500;
+              font-style: italic;
+              color: var(--tw-prose-quotes);
+              border-inline-start-width: .25rem;
+              border-inline-start-color: var(--tw-prose-quote-borders);
+              quotes: '“' '”' '‘' '’';
+              margin-top: 1.6em;
+              margin-bottom: 1.6em;
+              padding-inline-start: 1em;
+            "><${codeElement.tagName} class="${customClass}" style="${customStyles}">${el.innerText}</${codeElement.tagName}></blockquote>`
+            );
+          }else{
+            result.push(`
+              <blockquote class="${customClass}" style="${customStyles};
+                font-weight: 500;
+                font-style: italic;
+                color: var(--tw-prose-quotes);
+                border-inline-start-width: .25rem;
+                border-inline-start-color: var(--tw-prose-quote-borders);
+                quotes: '“' '”' '‘' '’';
+                margin-top: 1.6em;
+                margin-bottom: 1.6em;
+                padding-inline-start: 1em;
+              ">${el.innerText}</blockquote>`);
+          }
+          }
+        } else if (el.tagName === "P" && !isInsideBlockquote) {
+          // Only process <p> if it's NOT inside a <blockquote>
           result.push(
             `<p class="${customClass}" style="${customStyles}">${el.innerText}</p>`
           );
-        } else if (el.tagName === "H1") {
+        }
+        // Process each element based on its tag name
+        else if (el.tagName === "H1") {
           result.push(
             `<h1 class="${customClass}" style="${customStyles}">${el.innerText}</h1>`
           );
@@ -79,7 +119,7 @@ async function giveWebsiteInfo(url) {
           let codeElement = el.querySelector("code");
           if (codeElement) {
             result.push(
-              `<pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);"><code class="language-shell">${codeElement.innerText}</code></pre>`
+              `<pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);"><${codeElement.tagName} class="language-shell">${codeElement.innerText}</${codeElement.tagName}></pre>`
             );
           } else {
             result.push(
@@ -90,24 +130,7 @@ async function giveWebsiteInfo(url) {
           result.push(
             `<a class="${customClass}" style="${customStyles}" href="${el.href}" target="_blank">${el.innerText}</a>`
           );
-        } else if (el.tagName === "CODE") {
-          result.push(
-            `<code class="${customClass}" style="${customStyles}">${el.innerText}</code>`
-          );
-        } else if (el.tagName === "BLOCKQUOTE") {
-          result.push(`
-            <blockquote class="${customClass}" style="${customStyles};
-              font-weight: 500;
-              font-style: italic;
-              color: var(--tw-prose-quotes);
-              border-inline-start-width: .25rem;
-              border-inline-start-color: var(--tw-prose-quote-borders);
-              quotes: '“' '”' '‘' '’';
-              margin-top: 1.6em;
-              margin-bottom: 1.6em;
-              padding-inline-start: 1em;
-            ">${el.innerText}</blockquote>`);
-        } else if (el.tagName === "HEADER") {
+        }  else if (el.tagName === "HEADER") {
           result.push(
             `<header class="${customClass}" style="${customStyles}">${el.innerText}</header>`
           );

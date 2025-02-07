@@ -1,6 +1,14 @@
+import express from "express";
+import cors from "cors";
 import giveWebsiteInfo from "./WebsiteScrapper.js";
 import giveTweetInfo from "./Tweet.js";
 import giveYoutubeInfo from "./Youtube.js";
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(express.json());
+app.use(cors());
 
 // Function to detect the type of URL
 function detectUrlType(url) {
@@ -13,29 +21,32 @@ function detectUrlType(url) {
     }
 }
 
-// Function to process a given URL
-async function processUrl(url) {
-    const type = detectUrlType(url);
+app.post("/process-url", async (req, res) => {
+    try {
+        const { url } = req.body;
+        if (!url) {
+            return res.status(400).json({ error: "URL is required" });
+        }
 
-    if (type === "youtube") {
-        return await giveYoutubeInfo(url);
-    } else if (type === "tweet") {
-        return await giveTweetInfo(url);
-    } else if (type === "website") {
-        return await giveWebsiteInfo(url);
-    } else {
-        return { error: "Unknown URL type" };
+        const type = detectUrlType(url);
+        let result;
+
+        if (type === "youtube") {
+            result = await giveYoutubeInfo(url);
+        } else if (type === "tweet") {
+            result = await giveTweetInfo(url);
+        } else if (type === "website") {
+            result = await giveWebsiteInfo(url);
+        } else {
+            return res.status(400).json({ error: "Unknown URL type" });
+        }
+
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
-}
+});
 
-// Example URLs
-const urls = [
-    "https://x.com/__faizanr__/status/1885052479689429001",
-    "https://youtu.be/G9VbtcsPKT0?si=4bm2AmUj6dnz_NIY",
-    "https://faizan-raza.vercel.app"
-];
-
-// Process all URLs dynamically
-const results = await Promise.all(urls.map(processUrl));
-
-console.log(results);
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
