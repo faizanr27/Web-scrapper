@@ -1,458 +1,127 @@
-Web Scraping in JavaScript – How to Use Puppeteer to Scrape Web Pages
+Dev Blog
 
-Search   Submit your search query
-Forum Donate
+DevBlog
+Sign In
+The Power of UI/UX: Crafting Exceptional Digital Experiences
+Unknown Author
+February 2, 2025
 
-Learn to code — free 3,000-hour curriculum
+Introduction
 
-January 31, 2023 / #JavaScript
-Web Scraping in JavaScript – How to Use Puppeteer to Scrape Web Pages
-Gaël Thomas
+In today's digital-first world, User Interface (UI) and User Experience (UX) play a pivotal role in defining the success of digital products. Whether it's a mobile application, a website, or enterprise software, UI/UX design determines how users interact with the product and how they feel while doing so. A well-designed UI/UX can boost engagement, increase conversions, and drive customer satisfaction. In this blog, we'll explore the fundamentals of UI/UX design, its importance, best practices, and the latest trends shaping the industry.
 
-Welcome to the world of web scraping! Have you ever needed data from a website but found it hard to access it in a structured format? This is where web scraping comes in.
+Understanding UI and UX
 
-Using scripts, we can extract the data we need from a website for various purposes, such as creating databases, doing some analytics, and even more.
+Before diving deep into the details, it's essential to differentiate between UI and UX.
 
-Disclaimer: Be careful when doing web scraping. Always make sure you're scraping sites that allow it, and performing this activity within ethical and legal limits.
+User Interface (UI)
 
-JavaScript and Node.js offers various libraries that make web scraping easier. For simple data extraction, you can use Axios to fetch an API responses or a website HTML.
+UI refers to the visual aspects of a product—everything that users see and interact with. This includes buttons, icons, typography, color schemes, animations, and overall layout. UI design focuses on making a product aesthetically pleasing while ensuring usability and accessibility.
 
-But if you're looking to do more advanced tasks including automations, you'll need libraries such as Puppeteer, Cheerio, or Nightmare (don't worry the name is nightmare, but it's not that bad to use 😆).
+User Experience (UX)
 
-I'll introduce the basics of web scraping in JavaScript and Node.js using Puppeteer in this article. I structured the writing to show you some basics of fetching information on a website and clicking a button (for example, moving to the next page).
+UX, on the other hand, deals with the overall experience a user has while interacting with a product. It involves research, usability testing, information architecture, and interaction design. UX design ensures that users find value in what is being offered by making the product intuitive, seamless, and enjoyable to use.
 
-At the end of this introduction, I'll recommend ways to practice and learn more by improving the project we just created.
+Importance of UI/UX Design
 
-Prerequisites
+1. Enhances User Engagement
 
-Before diving in and scraping our first page together using JavaScript, Node.js, and the HTML DOM, I'd recommend having a basic understanding of these technologies. It'll improve your learning and understanding of the topic.
+A well-thought-out UI/UX design increases user engagement by making it easy and enjoyable for users to navigate through a product. A cluttered interface or poor user flow can drive users away, reducing retention rates.
 
-Let's dive in! 🤿
+2. Boosts Conversions and Revenue
 
-How to Initialize Your First Puppeteer Scraper
+A well-optimized UI/UX can significantly impact conversions. If users can easily find what they need and perform tasks without friction, they are more likely to complete purchases, sign up for services, or take desired actions.
 
-New project...new folder! First, create the first-puppeteer-scraper-example folder on your computer. It'll contain the code of our future scraper.
+3. Reduces Development Costs
 
-mkdir first-puppeteer-scraper-example
+Investing in UI/UX from the beginning reduces costs associated with redesigns and fixes later in the development cycle. A poorly designed product often requires multiple revisions, leading to wasted resources.
 
+4. Strengthens Brand Loyalty
 
-Now, it's time to initialize your Node.js repository with a package.json file. It's helpful to add information to the repository and NPM packages, such as the Puppeteer library.
+A smooth and engaging user experience fosters trust and loyalty. When users have positive interactions with a product, they are more likely to return and recommend it to others.
 
-npm init -y
+Principles of Good UI/UX Design
 
+1. Simplicity
 
-After typing this command, you should find this package.json file in your repository tree.
+The best designs are often the simplest. Users should not have to think too hard to use a product. Reducing cognitive load by eliminating unnecessary elements and focusing on the core functionality enhances usability.
 
-{
-  "name": "first-puppeteer-scraper-example",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "puppeteer": "^19.6.2"
-  },
-  "type": "module",
-  "devDependencies": {},
-  "description": ""
-}
+2. Consistency
 
+Maintaining consistency in design elements such as fonts, colors, and button styles across the product ensures a cohesive experience. This helps users familiarize themselves with the interface quickly.
 
-Before proceeding, we must ensure the project is configured to handle ES6 features. To do so, you can add the "types": "module" instruction at the end of the configuration.
+3. Intuitive Navigation
 
-{
-  "name": "first-puppeteer-scraper-example",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "puppeteer": "^19.6.2"
-  },
-  "type": "module",
-  "description": "",
-  "types": "module"
-}
+A well-structured navigation system allows users to move seamlessly through a product. Clear labels, breadcrumbs, and logical placement of elements enhance user experience.
 
+4. Accessibility
 
-The last step of our scraper initialization is to install the Puppeteer library. Here's how:
+Designing with accessibility in mind ensures that people with disabilities can also use the product effectively. This includes implementing screen reader compatibility, color contrast, and keyboard navigation support.
 
-npm install puppeteer
+5. Feedback and Responsiveness
 
+Users should receive immediate feedback when they take actions, such as clicking a button or submitting a form. Loading animations, error messages, and success confirmations improve user confidence.
 
-Wow! We're there – we're ready to scrape our first website together. 🤩
+6. Mobile-Friendliness
 
-How to Scrape Your First Piece of Data
+With a growing number of users accessing digital products via mobile devices, ensuring a responsive design that adapts to different screen sizes is crucial.
 
-In this article, we'll use the ToScrape website as our learning platform. This online sandbox provides two projects specifically designed for web scraping, making it a great starting point to learn the basics such as data extraction and page navigation.
+The UI/UX Design Process
 
-For this beginner's introduction, we'll specifically focus on the Quotes to Scrape website.
+1. Research and Analysis
 
-How to Initialize the Script
+Before designing anything, understanding the target audience is essential. Conducting user research, competitor analysis, and surveys helps in creating a user-centric design.
 
-In the project repository root, you can create an index.js file. This will be our application entry point.
+2. Wireframing and Prototyping
 
-To keep it simple, our script consists of one function in charge of getting the website's quotes (getQuotes).
+Wireframes act as blueprints for the design, outlining the structure and functionality. Prototypes provide a clickable, interactive model of the product before full-scale development begins.
 
-In the function's body, we will need to follow different steps:
+3. Visual Design
 
-Start a Puppeteer session with puppeteer.launch (it'll instantiate a browser variable that we'll use for manipulating the browser)
-Open a new page/tab with browser.newPage (it'll instantiate a page variable that we'll use for manipulating the page)
-Change the URL of our new page to http://quotes.toscrape.com/ with page.goto
+The visual design phase involves choosing color schemes, typography, iconography, and UI components that align with the brand identity and user preferences.
 
-Here's the commented version of the initial script:
+4. Usability Testing
 
-import puppeteer from "puppeteer";
+Testing the design with real users helps identify issues and gather feedback. This iterative process ensures that the final product meets user expectations.
 
-const getQuotes = async () => {
-  // Start a Puppeteer session with:
-  // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-  // - no default viewport (`defaultViewport: null` - website page will in full width and height)
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-  });
+5. Development and Implementation
 
-  // Open a new page
-  const page = await browser.newPage();
+Once the UI/UX design is finalized, developers bring it to life through coding. Collaboration between designers and developers ensures a seamless implementation.
 
-  // On this new page:
-  // - open the "http://quotes.toscrape.com/" website
-  // - wait until the dom content is loaded (HTML is ready)
-  await page.goto("http://quotes.toscrape.com/", {
-    waitUntil: "domcontentloaded",
-  });
-};
+6. Post-Launch Analysis and Iteration
 
-// Start the scraping
-getQuotes();
+Even after launch, continuous monitoring of user behavior through analytics helps in identifying areas for improvement. Regular updates and iterations keep the product relevant and user-friendly.
 
+Latest UI/UX Trends
 
-What do you think of running our scraper and seeing the output? Let's do it with the command below:
+1. Dark Mode
 
-node index.js
+Dark mode has gained immense popularity due to its aesthetic appeal and reduced eye strain. Many apps and websites now offer dark mode as an alternative theme.
 
+2. Microinteractions
 
-After doing this, you should have a brand new browser application started with a new page and the website Quotes to Scrape loaded onto it. Magic, isn't it? 🪄
+Small animations and interactive elements, such as button hovers and loading spinners, enhance user engagement and provide instant feedback.
 
- Quotes to Scrape homepage loaded by our initial script
+3. Neumorphism
 
-Note: For this first iteration, we're not closing the browser. This means you will need to close the browser to stop the running application.
+A blend of skeuomorphism and flat design, neumorphism creates soft, embossed UI elements that add depth and realism to interfaces.
 
-How to Fetch the First Quote
+4. AI-Powered Personalization
 
-Whenever you want to scrape a website, you'll have to play with the HTML DOM. What I recommend is to inspect the page and start navigating the different elements to find what you need.
+Artificial intelligence is being used to personalize user experiences, from content recommendations to dynamic UI changes based on user behavior.
 
-In our case, we'll follow the baby step principle and start fetching the first quote, author, and text.
+5. Voice User Interfaces (VUIs)
 
-After browsing the page HTML, we can notice a quote is encapsulated in a <div> element with a class name quote (class="quote"). This is important information because the scraping works with CSS selectors (for example, .quote).
+With the rise of voice assistants like Siri and Alexa, VUIs are becoming a crucial part of UI/UX design, enabling hands-free interactions.
 
- Browser inspector with the first quote &lt;div&gt; selected
+6. Augmented Reality (AR) and Virtual Reality (VR)
 
- An example of how each quote is rendered in the HTML
+AR and VR are revolutionizing UI/UX by offering immersive experiences in gaming, e-commerce, and education.
 
-Now that we have this knowledge, we can return to our getQuotes function and improve our code to select the first quote and extract its data.
+Conclusion
 
-We will need to add the following after the page.goto instruction:
+UI/UX design is a crucial aspect of creating successful digital products. A well-crafted user interface combined with a seamless user experience can significantly impact engagement, conversions, and brand loyalty. By following best practices, staying updated with trends, and prioritizing user needs, businesses can create products that not only look good but also function efficiently.
 
-Extract data from our page HTML with page.evaluate (it'll execute the function passed as a parameter in the page context and returns the result)
-Get the quote HTML node with document.querySelector (it'll fetch the first <div> with the classname quote and returns it)
-Get the quote text and author from the previously extracted quote HTML node with quote.querySelector (it'll extract the elements with the classname text and author under <div class="quote"> and returns them)
+As technology evolves, UI/UX will continue to shape how we interact with digital platforms. Investing in thoughtful design today ensures a better, more intuitive digital experience for users tomorrow.
 
-Here's the updated version with detailed comments:
-
-import puppeteer from "puppeteer";
-
-const getQuotes = async () => {
-  // Start a Puppeteer session with:
-  // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-  // - no default viewport (`defaultViewport: null` - website page will in full width and height)
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-  });
-
-  // Open a new page
-  const page = await browser.newPage();
-
-  // On this new page:
-  // - open the "http://quotes.toscrape.com/" website
-  // - wait until the dom content is loaded (HTML is ready)
-  await page.goto("http://quotes.toscrape.com/", {
-    waitUntil: "domcontentloaded",
-  });
-
-  // Get page data
-  const quotes = await page.evaluate(() => {
-    // Fetch the first element with class "quote"
-    const quote = document.querySelector(".quote");
-
-    // Fetch the sub-elements from the previously fetched quote element
-    // Get the displayed text and return it (`.innerText`)
-    const text = quote.querySelector(".text").innerText;
-    const author = quote.querySelector(".author").innerText;
-
-    return { text, author };
-  });
-
-  // Display the quotes
-  console.log(quotes);
-
-  // Close the browser
-  await browser.close();
-};
-
-// Start the scraping
-getQuotes();
-
-
-Something interesting to point out is that the function name for selecting an element is the same as in the browser inspect. Here's an example:
-
- After running the document.querySelector instruction in the browser inspector, we have the first quote as an output (like on Puppeteer)
-
-Let's run our script one more time and see what we have as an output:
-
-{
-  text: '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”',
-  author: 'Albert Einstein'
-}
-
-
-We did it! Our first scraped element is here, right in the terminal. Now, let's expand it and fetch all the current page quotes. 🔥
-
-How to Fetch All Current Page Quotes
-
-Now that we know how to fetch one quote, let's trick our code a bit to get all the quotes and extract their data one by one.
-
-Previously we used document.getQuerySelector to select the first matching element (the first quote). To be able to fetch all quotes, we will need the document.querySelectorAll function instead.
-
-We'll need to follow these steps to make it work:
-
-Replace document.getQuerySelector with document.querySelectorAll (it'll fetch all <div> elements with the classname quote and return them)
-Convert the fetched elements to a list with Array.from(quoteList) (it'll ensure the list of quotes is iterable)
-Move our previous code to get the quote text and author inside the loop and return the result (it'll extract the elements with the classname text and author under <div class="quote"> for each quote)
-
-Here's the code update:
-
-import puppeteer from "puppeteer";
-
-const getQuotes = async () => {
-  // Start a Puppeteer session with:
-  // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-  // - no default viewport (`defaultViewport: null` - website page will be in full width and height)
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-  });
-
-  // Open a new page
-  const page = await browser.newPage();
-
-  // On this new page:
-  // - open the "http://quotes.toscrape.com/" website
-  // - wait until the dom content is loaded (HTML is ready)
-  await page.goto("http://quotes.toscrape.com/", {
-    waitUntil: "domcontentloaded",
-  });
-
-  // Get page data
-  const quotes = await page.evaluate(() => {
-    // Fetch the first element with class "quote"
-    // Get the displayed text and returns it
-    const quoteList = document.querySelectorAll(".quote");
-
-    // Convert the quoteList to an iterable array
-    // For each quote fetch the text and author
-    return Array.from(quoteList).map((quote) => {
-      // Fetch the sub-elements from the previously fetched quote element
-      // Get the displayed text and return it (`.innerText`)
-      const text = quote.querySelector(".text").innerText;
-      const author = quote.querySelector(".author").innerText;
-
-      return { text, author };
-    });
-  });
-
-  // Display the quotes
-  console.log(quotes);
-
-  // Close the browser
-  await browser.close();
-};
-
-// Start the scraping
-getQuotes();
-
-
-As an end result, if we run our script one more time, we should have a list of quotes as an output. Each element of this list should have a text and an author property.
-
-[
-  {
-    text: '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”',
-    author: 'Albert Einstein'
-  },
-  {
-    text: '“It is our choices, Harry, that show what we truly are, far more than our abilities.”',
-    author: 'J.K. Rowling'
-  },
-  {
-    text: '“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”',
-    author: 'Albert Einstein'
-  },
-  {
-    text: '“The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.”',
-    author: 'Jane Austen'
-  },
-  {
-    text: "“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”",
-    author: 'Marilyn Monroe'
-  },
-  {
-    text: '“Try not to become a man of success. Rather become a man of value.”',
-    author: 'Albert Einstein'
-  },
-  {
-    text: '“It is better to be hated for what you are than to be loved for what you are not.”',
-    author: 'André Gide'
-  },
-  {
-    text: "“I have not failed. I've just found 10,000 ways that won't work.”",
-    author: 'Thomas A. Edison'
-  },
-  {
-    text: "“A woman is like a tea bag; you never know how strong it is until it's in hot water.”",
-    author: 'Eleanor Roosevelt'
-  },
-  {
-    text: '“A day without sunshine is like, you know, night.”',
-    author: 'Steve Martin'
-  }
-]
-
-
-Good job! All the quotes from the first page are now scraped by our script. 👏
-
-How to Move to the Next Page
-
-Our script is now able to fetch all the quotes for one page. What would be interesting is clicking on the "Next page" at the page bottom and doing the same on the second page.
-
- "Next" button at the Quotes to Scrape page bottom
-
-Back to our browser inspect, and let's find how we can target this element using CSS selectors.
-
-As we can notice, the next button is placed under an unordered list <ul> with a pager classname (<ul class="pager">). This list has an element <li> with a next classname (<li class="next">). Finally, there is a link anchor <a> that links to the second page (<a href="/page/2/">).
-
-In CSS, if we want to target this specific link there are different ways to do that. We can do:
-
-.next > a: but, it's risky because if there is an other element with .next as a parent element containing a link, it'll click on it.
-.pager > .next > a: safer, because we make sure the link should be inside the .pager parent element under the .next element. There is a low risk of having this hierarchy more than once.
-
- An example of how the "Next" button is rendered in the HTML
-
-To click this button, at the end of our script after the console.log(quotes);, you can add the following: await page.click(".pager > .next > a");.
-
-Since we're now closing the browser page with await browser.close(); after all instructions are done, you need to comment on this instruction to see the second page opened in the scraper browser.
-
-It's temporary and for testing purposes, but the end of our getQuotes function should look like this:
-
-  // Display the quotes
-  console.log(quotes);
-
-  // Click on the "Next page" button
-  await page.click(".pager > .next > a");
-
-  // Close the browser
-  // await browser.close();
-
-
-After this, if you run our scraper again, after processing all instructions, your browser should stop on the second page:
-
- Quotes to Scrape second page loaded after clicking the "Next" button
-
-It’s Your Time! Here’s What You Can Do Next:
-
-Congrats on reaching the end of this introduction to scraping with Puppeteer! 👏
-
-Now it's your turn to improve the scraper and make it get more data from the Quotes to Scrape website. Here's a list of potential improvements you can make:
-
-Navigate between all pages using the "Next" button and fetch the quotes on all the pages.
-Fetch the quote's tags (each quote has a list of tags).
-Scrape the author's about page (by clicking on the author's name on each quote).
-Categorize the quotes by tags or authors (it's not 100% related to the scraping itself, but that can be a good improvement).
-
-Feel free to be creative and do any other things you see fit 🚀
-
-Scraper Code Is Available on GitHub
-
-Check out the latest version of our scraper on GitHub! You're free to save, fork, or utilize it as you see fit.
-
-=> First Puppeteer Scraper (example)
-
-Successful Scraping Start: Thanks for reading the article!
-
-I hope this article gave you a valuable introduction to web scraping using JavaScript and Puppeteer. Writing this was a pleasure, and I hope you found it informative and enjoyable.
-
-Join me on Twitter for more content like this. I regularly share content to help you grow your web development skills and would love to have you join the conversation. Let's learn, grow, and inspire each other along the way!
-
-Gaël Thomas
-
-Getting started on a solopreneur journey alongside my 9-5. 🚧 Documenting my learnings and progress on Twitter (X). ✍️ Software Engineer. 💻
-
-If you read this far, thank the author to show them you care. Say Thanks
-
-Learn to code for free. freeCodeCamp's open source curriculum has helped more than 40,000 people get jobs as developers. Get started
-
-ADVERTISEMENT
-
-freeCodeCamp is a donor-supported tax-exempt 501(c)(3) charity organization (United States Federal Tax Identification Number: 82-0779546)
-
-Our mission: to help people learn to code for free. We accomplish this by creating thousands of videos, articles, and interactive coding lessons - all freely available to the public.
-
-Donations to freeCodeCamp go toward our education initiatives, and help pay for servers, services, and staff.
-
-You can make a tax-deductible donation here.
-
-Trending Books and Handbooks
-Learn CSS Transform
-Build a Static Blog
-Build an AI Chatbot
-What is Programming?
-Python Code Examples
-Open Source for Devs
-HTTP Networking in JS
-Write React Unit Tests
-Learn Algorithms in JS
-How to Write Clean Code
-Learn PHP
-Learn Java
-Learn Swift
-Learn Golang
-Learn Node.js
-Learn CSS Grid
-Learn Solidity
-Learn Express.js
-Learn JS Modules
-Learn Apache Kafka
-REST API Best Practices
-Front-End JS Development
-Learn to Build REST APIs
-Intermediate TS and React
-Command Line for Beginners
-Intro to Operating Systems
-Learn to Build GraphQL APIs
-OSS Security Best Practices
-Distributed Systems Patterns
-Software Architecture Patterns
-Mobile App
-Our Charity
-Publication powered by Hashnode About Alumni Network Open Source Shop Support Sponsors Academic Honesty Code of Conduct Privacy Policy Terms of Service Copyright Policy
-
-https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg,https://cdn.hashnode.com/res/hashnode/image/upload/v1632214182008/s7gF-WXzU.png,https://www.freecodecamp.org/news/content/images/size/w2000/2023/01/web-scraping-in-javascript-with-puppeteer.png,https://www.freecodecamp.org/news/content/images/2023/01/image-353.png,https://www.freecodecamp.org/news/content/images/2023/01/image-354.png,https://www.freecodecamp.org/news/content/images/2023/01/image-355.png,https://www.freecodecamp.org/news/content/images/2023/01/image-362.png,https://www.freecodecamp.org/news/content/images/2023/01/image-363.png,https://www.freecodecamp.org/news/content/images/2023/01/image-356.png,https://www.freecodecamp.org/news/content/images/2023/01/image-357.png,https://cdn.hashnode.com/res/hashnode/image/upload/v1632214182008/s7gF-WXzU.png,https://cdn.freecodecamp.org/platform/universal/apple-store-badge.svg,https://cdn.freecodecamp.org/platform/universal/google-play-badge.svg
+https://picsum.photos/seed/react/1200/600,https://picsum.photos/seed/john/100/100

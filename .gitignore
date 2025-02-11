@@ -3,3 +3,6 @@ node_modules
 *.png
 googleSearch.js
 transcript.txt
+.env
+env
+*.env

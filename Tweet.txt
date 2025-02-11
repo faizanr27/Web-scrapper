@@ -1,10 +1,9 @@
-UserName: Faizan Raza
-@__faizanr__
+UserName: Forrest Knight
+@ForrestPKnight
 
-Tweet: Winter Arc, Day 57485 
-- Skipped gym.
-- Working on Second Brain App. 
-- Added conditional rendering.
-- Now it's time to work on Vector Database (for storing embeddings) and AI-powered search!
-
-gn
+Tweet: My least favorite thing about programming/compsci is how everyone is trying to reinvent the wheel. And I'm not talking about all of these frameworks or projects, y'all go for it. I'm talking about naming conventions. What is wrong with y'all??
+Arrays are fixed size by definition, like in Java, but not JS. In JS they're dynamic. Oh, and in Python we call those Lists.
+Dictionaries map keys to values right? Yea in Python they do. And sure, in JS they do too but they're objects, and they have this whole prototype inheritance thing going on. And Lua just calls 'em tables, because why not?
+And enums. Oh sweet baby Jesus. Don't even get me started on enums. In C they're just named integer constants. But in Rust they're algebraic data types, store data per variant. TS enums? They're numbers. Or strings. Or both. And they reverse-map for some reason. They're anything your little heart desires. C# it's just a glorified integer. In Java they're full-fledged classes with methods and state. Objects in Python but still mostly static mappings? Sum types in haskell?? What the heck is going on with enums?!?
+And trees are hierarchical structures with nodes connected by edges. So graphs are the same but just finite and non-linear, right? Nope. Nodes in graphs are actually called vertices... ?? And I know I know, "it's because trees pulled from nature and graphs pulled from math." Don't care. This is CS.
+Why are smart people so dumb?
