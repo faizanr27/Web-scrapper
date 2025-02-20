@@ -6,3 +6,5 @@ transcript.txt
 .env
 env
 *.env
+markdown.html
+markdown.md

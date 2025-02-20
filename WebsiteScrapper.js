@@ -2,6 +2,11 @@ import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 import fs from "fs/promises";
+import 'dotenv/config';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(`${process.env.GEMINI_API_KEY}`);
+const model1 = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 async function giveWebsiteInfo(url) {
   let browser = null;
@@ -160,7 +165,7 @@ async function giveWebsiteInfo(url) {
 
       return { result1: { title, body, imageUrls }, result2: result.join("") };
     });
-
+    console.log("succes 1")
     const htmlContent = `
       <html>
       <head><title>Scraped Data</title></head>
@@ -172,10 +177,38 @@ async function giveWebsiteInfo(url) {
 
     await fs.writeFile("output.html", htmlContent);
     content.push(extractedData.result1);
+    console.log("succes 2")
 
     try {
       const textContent = `${extractedData.result1.title}\n\n${extractedData.result1.body}\n\n${extractedData.result1.imageUrls}`;
       await fs.writeFile('webpage.txt', textContent, 'utf-8');
+
+      
+      const prompt =  `You are an AI assistant that converts webpage content to markdown while filtering out unnecessary information. Please follow these guidelines:
+      Remove any inappropriate content, ads, or irrelevant information
+      If unsure about including something, err on the side of keeping it
+      Answer in English. Include all points in markdown in sufficient detail to be useful.
+      Aim for clean, readable markdown.
+      Return the markdown and nothing else.
+      Input: ${textContent}
+      Output:\`\`\`markdown\n`
+      console.log("succes 3")
+
+
+const result = await model1.generateContent(prompt);
+const summary = result.response.candidates[0]?.content.parts[0]?.text || "No summary found";
+console.log(summary)
+      const htmlContent = `
+      <html>
+      <head><title>Scraped Data</title></head>
+      <body style="font-family:sans-serif; padding:20px;">
+        <pre style="color:#333; padding:15px; background-color:#f5f5f5; overflow-x: auto; border-radius: 5px; font-family: monospace; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);"><code>${summary}</code></pre>
+      </body>
+      </html>
+    `;
+
+    await fs.writeFile("markdown.html", htmlContent);
+    await fs.writeFile("markdown.md", summary);
       console.log("Plain text with title saved successfully.");
     } catch (error) {
       console.error("Error saving file:", error);

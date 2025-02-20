@@ -1,127 +1,872 @@
-Dev Blog
+Mastering Advanced ReactJS Concepts: Essential Knowledge for Every Frontend Developer | by Shivam Bhadani | Feb, 2025 | Medium
 
-DevBlog
-Sign In
-The Power of UI/UX: Crafting Exceptional Digital Experiences
-Unknown Author
-February 2, 2025
+Write
 
+Sign up
+
+Sign in
+
+Mastering Advanced ReactJS Concepts: Essential Knowledge for Every Frontend Developer
+
+Shivam Bhadani
+
+·
+
+Follow
+
+12 min read
+·
+Feb 9, 2025
+
+396
+
+15
+
+In this blog, we will study all the advanced concepts of ReactJS. You can clear any Frontend Developer interview after reading this one blog. After reading this, you can also build your own UI library like ReactJS.
+
+Content of this blog
+What is Rendering, and how it happens?
+What is Re-rendering, and when does a component re-render?
+Understanding Virtual DOM
+What is Reconciliation Algorithm?
+Performance Optimizations in ReactJS
+What is Rendering, and how it happens?
+
+If you have worked with ReactJS, you may have heard much about this term. Let's understand it in depth.
+
+In ReactJS, we write JSX. JSX stands for JavaScript XML. It is a syntax introduced by ReactJS, which is similar to HTML. Our frontend apps run on browsers, and browsers don’t understand JSX. The only language browsers understand is JavaScript. Somehow, this JSX needs to be transformed into JavaScript first. It is done by a ReactJS compiler called Babel.
+
+How does Babel convert JSX to JavaScript?
+
+It takes the JSX and calls the React.createElement() function. This createElement() function returns a JavaScript Object called React Element.
+
+Just read the below sentence and put it into your mind. We will learn the entire process in detail:
+The main goal is to get React Element from JSX. You can manually write code by calling React.createElement(), or you can write JSX and let the babel convert your JSX code into React Element.
+
+What is React.createElement()?
+
+React.createElement() is the fundamental function used by React to create elements (React Nodes). JSX is just a syntactic sugar for React.createElement().
+
+First, we will learn how to translate JSX into React.createElement() function call then we will learn what will be the output of this function.
+
+For example, if you write this JSX:
+
+const jsx = <h1>Hello, React!</h1>;
+
+It is internally converted to:
+
+const element = React.createElement("h1", null, "Hello, React!");
+Syntax of React.createElement()
+React.createElement(type, props, ...children)
+
+Where:
+
+type (string or component):
+
+If it’s a string, it represents a standard HTML tag (e.g., "h1", "div").
+If it’s a function or class, it represents a React component.
+
+props (object):
+
+Attributes like className, id, onClick, etc.
+Can be null if no props are needed.
+
+...children (optional):
+
+Content inside the element (text, other elements, or components).
+
+Example 1:
+
+JSX:
+
+const Jsx = <h1>Hello, React!</h1>;
+
+Its React.createElement function call:
+
+const element = React.createElement("h1", null, "Hello, React!");
+
+Example 2:
+
+JSX:
+
+const Jsx = <h1 className="title">Hello, React!</h1>;
+
+Its React.createElement function call:
+
+const element = React.createElement("h1", { className: "title" }, "Hello, React!");
+
+Example 3:
+
+JSX:
+
+<div>
+  <h1>Hello</h1>
+  <p>Welcome to React</p>
+</div>
+
+Its React.createElement function call:
+
+const element = React.createElement(
+  "div",
+  null,
+  React.createElement("h1", null, "Hello"),
+  React.createElement("p", null, "Welcome to React")
+);
+
+Example 4:
+
+JSX:
+
+const Jsx = <Card data = {cardData} />
+
+Its React.createElement function call:
+
+const element = React.createElement(Card, { data: cardData })
+
+As I told you, children are optional, so if there are no children, then we will omit it in the function call.
+
+Complex Example:
+
+I guess we understood the simple examples. Let's do a complex example of this to fully understand:
+
+JSX:
+
+function App() {
+  return (
+    <div className="container">
+      <h1>Welcome to React</h1>
+      <UserCard name="Shivam" age={22} />
+      <button onClick={() => alert("Button Clicked!")}>Click Me</button>
+    </div>
+  );
+}
+
+function UserCard({ name, age }) {
+  return (
+    <div className="user-card">
+      <h2>{name}</h2>
+      <p>Age: {age}</p>
+    </div>
+  );
+}
+
+We will do step by step.
+
+Step 1: Convert UserCard Component
+
+function UserCard(props) {
+  return React.createElement(
+    "div",
+    { className: "user-card" },
+    React.createElement("h2", null, props.name),
+    React.createElement("p", null, `Age: ${props.age}`)
+  );
+}
+
+Step 2: Convert the App Component
+
+function App() {
+  return React.createElement(
+    "div",
+    { className: "container" },
+    React.createElement("h1", null, "Welcome to React"),
+    React.createElement(UserCard, { name: "Shivam", age: 22 }),
+    React.createElement(
+      "button",
+      { onClick: () => alert("Button Clicked!") },
+      "Click Me"
+    )
+  );
+}
+
+Now, we understand how to convert JSX into React.createElement() function call. You can either write the HTML kind of syntax or directly write the createElement() function into your files. If you write HTML then internally babel will convert that into the createElement() function call.
+
+Output of React.createElement()
+
+This function call returns a plain JavaScript object and this object is called React Element.
+
+React.createElement(type, props, ...children)
+
+It returns an object like this:
+
+{
+  type: "",
+  props: {
+    
+  },
+  key: "",
+  ref: ""
+}
+
+Note: Inside props you will get props (attributes of tag) as well as children also.
+
+<div>hello</div> and <div chilren=”hello” /> is same. So, along with other attributes, you get children also in the props object.
+
+Example:
+
+const element = React.createElement("h1", { className: "title" }, "Hello, React!");
+console.log(element);
+
+Output:
+
+{
+  type: "h1",
+  props: {
+    className: "title",
+    children: "Hello, React!"
+  },
+  key: null,
+  ref: null,
+  _owner: null,
+  _store: {}
+}
+Breaking Down the Output
+type: "h1" → This tells React that this element represents an <h1> tag.
+props → This contains the attributes (like className) and child elements.
+className: "title" → This is the className prop passed to the <h1>.
+children: "Hello, React!" → The content inside the <h1> tag.
+key → If you rendered the list with map(), then you must have passed the key. This is the same key. You will learn that actual use-case of key in this blog.
+ref → Used to directly access and interact with DOM. Maybe if you used useRef() then you know this.
+_owner and _store → Internal React properties (not important for basic use).
+
+Example:
+
+JSX:
+
+<div id = "container">
+  <h1>Hello</h1>
+  <p>Welcome to React</p>
+</div>
+
+React.createElement function call:
+
+const element = React.createElement(
+  "div",
+  { id: "container" },
+  React.createElement("h1", null, "Hello"),
+  React.createElement("p", null, "Welcome to React")
+);
+console.log(element);
+
+Output:
+
+{
+  type: "div",
+  props: {
+    id: "container",
+    children: [
+      {
+        type: "h1",
+        props: { children: "Hello" },
+        key: null,
+        ref: null
+      },
+      {
+        type: "p",
+        props: { children: "Welcome to React" },
+        key: null,
+        ref: null
+      }
+    ]
+  },
+  key: null,
+  ref: null
+}
+
+I guess we have done enough examples to understand this concept. If you still have doubts, then you can ask in the comments.
+
+What exactly is Rendering?
+
+Rendering in React refers to the process of taking React elements (JSX or React.createElement() objects) and converting them into actual DOM elements that appear on the screen.
+
+Rendering are of two types:
+
+Intial Rendering
+Re-Rendering
+How does Initial Rendering happen?
+
+Below is the code that does the work:
+
+function App() {
+  return <h1>Hello, React!</h1>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+
+If you do create a reactJS app, then go to index.jsx to see the code.
+
+Steps:
+
+App() returns <h1>Hello, React!</h1>.
+React converts that into React Element Object.
+{
+  type: "h1",
+  props: { children: "Hello, React!" },
+}
+React creates a Virtual DOM.
+React updates the real DOM (<h1> is inserted into #root).
+
+In a large application, there are thousands of components and nestings, so we end up with a massive JS Object in a tree-like structure. Constructing a DOM from this huge JS object takes a lot of time. But React only constructs DOM from scratch the first time.
+
+You have noticed that when you build your React app the first time, it takes a lot of time. But in the next renders/ re-renders, it doesn’t take time. This optimisation is due to the “Virtual DOM” and “reconciliation” algorithms.
+
+We will study Virtual DOM in detail in this blog.
+
+What is Re-rendering, and when does a component re-render?
+
+Re-rendering in React is the process where a component updates and executes again to reflect changes in the UI. However, not every change triggers a re-render — React is optimized to only re-render components when necessary.
+
+A component re-renders when:
+
+Its State Changes (useState or this.setState is updated)
+Its Props Change (Parent component passes new props)
+Its Parent Re-Renders (Even if props don’t change)
+Re-Rendering Due to State Changes
+
+A component will re-render when its state is updated using useState .
+
+import React, { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  console.log("Counter Re-Rendered!");
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+export default Counter;
+
+Here, whenever button is clicked, the count state will change and the component will re-render to show to latest change.
+
+Re-Rendering Due to Props Change
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <Child count={count} />
+      <button onClick={() => setCount(count + 1)}>Update Count</button>
+    </div>
+  );
+}
+
+
+function Child({ count }) {
+  console.log("Child Re-Rendered!");
+
+  return <h1>Count: {count}</h1>;
+}
+
+export default Parent;
+
+If you click on the button then the count state will change. It will re-render the Parent (due to first rule) and also re-render the Child because Child is taken count as props. Whenever the state of the props changes, then the component re-renders.
+
+Re-Rendering Due to Parent Re-Rendering
+
+Even if a child’s props don’t change, it will still re-render if its parent re-renders.
+
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  console.log("Parent Re-Rendered!");
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Re-Render Parent</button>
+      <Child />
+    </div>
+  );
+}
+
+
+function Child() {
+  console.log("Child Re-Rendered!");
+  return <h1>Hello</h1>;
+}
+
+export default Parent;
+Parent component re-renders (due to state change).
+Child component also re-renders, even though it receives no props.
+
+If you don’t want the Child to re-render in this case, then you can wrap the Child in React.memo(). It will prevent re-rendering in this condition. It will only re-render on the first and second conditions.
+
+You may be wondering, if we don’t use React memo() and the entire subtree re-renders whenever any component re-renders, then wouldn’t our app be too slow?
+Ans) ReactJS is very clever. It uses Virtual DOM and Reconciliation algo to optimise it. We will study it in the next section of this blog.
+
+React 18+ Strict Mode Double Rendering
+
+In React 18+, components inside <React.StrictMode> re-render twice in development mode to detect side effects.
+
+import React from "react";
+import ReactDOM from "react-dom";
+
+function App() {
+  console.log("Component Rendered!");
+  return <h1>Hello</h1>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+In development mode, you’ll see “Component Rendered!” twice in the console.
+This doesn’t happen in production, so it’s safe to ignore it.
+
+Understanding Virtual DOM
+
+The Virtual DOM (V-DOM) is a lightweight copy of the real DOM that React maintains in memory. It allows React to efficiently update the UI without directly modifying the real DOM on every change.
+
+Why does React use a Virtual DOM?
+
+The real DOM is slow → Direct updates cause performance issues.
+Updating the real DOM is expensive → React minimizes unnecessary changes.
+React batches updates efficiently → React only updates what’s needed.
+How Does the Virtual DOM Work?
+
+Step 1: Render Phase (Creating the V-DOM):
+
+function App() {
+  return <h1>Hello, World!</h1>;
+}
+
+React calls App(), creating a Virtual DOM representation of:
+
+{
+  "type": "h1",
+  "props": { "children": "Hello, World!" }
+}
+
+This V-DOM is not real, just a JavaScript object in a tree-like structure.
+
+Step 2: Diffing (Comparing Old & New Virtual DOM):
+When state/props change, React creates a new Virtual DOM and compares it with the previous Virtual DOM.
+
+function Counter() {
+  const [count, setCount] = React.useState(0);
+
+  return <h1>Count: {count}</h1>;
+}
+
+Clicking a button updates count → React generates a new Virtual DOM:
+
+{
+  "type": "h1",
+  "props": { "children": "Count: 1" }
+}
+
+React compares this with the old V-DOM using its Reconciliation Algorithm.
+
+Step 3: Patching the Real DOM (Efficient Updates)
+
+React finds the differences (diffing step).
+React updates only the changed parts in the real DOM.
+
+Example:
+
+If only text inside <h1> changed from "Count: 0" → "Count: 1",
+React updates only the text, not the entire <h1> tag.
+
+How does this update happen?
+Ans) If you learnt DOM in JavaScript, then it's the same. It uses document.getElementByID().innerHTML = “Count: 1”. It's simple JavaScript internally. What part should be updated, it chooses cleverly with the help of diffing algorithms to minimize DOM updates.
+
+What is Reconciliation in React?
+
+Reconciliation is React’s algorithm to efficiently update the real DOM by minimizing changes.
+
+Reconciliation Steps:
+Generate a new Virtual DOM when state/props change.
+Compare (diff) the new V-DOM with the previous V-DOM.
+Identify what has changed (React’s Diffing Algorithm).
+Update only the changed parts in the real DOM.
+React’s Diffing Algorithm (How React Detects Changes Efficiently)
+Rule 1: Elements of Different Types Cause Full Re-Renders:
+If the element type changes, React destroys the old element and creates a new one. If you forgot what the type is, then refer to the argument of React.createElement() above.
+function App({ showText }) {
+  return showText ? <h1>Hello</h1> : <p>Hello</p>;
+}
+Changing <h1> to <p> makes React remove <h1> and create <p> from scratch!
+This is slow because React deletes the old node instead of modifying it.
+
+2. Rule 2: Elements of the Same Type Are Updated Efficiently:
+If the element type is the same, React only updates the changed attributes.
+
+function App({ text }) {
+  return <h1 className="title">{text}</h1>;
+}
+Changing text from "Hello" → "World" makes React only update the text.
+The <h1> element is not recreated, making updates very fast.
+
+3. Rule 3: Lists Are Compared Using Keys (Keyed Diffing):
+When rendering lists, React uses keys to track changes efficiently.
+
+Bad Code (No Keys) → Inefficient Reconciliation
+
+function List({ items }) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  );
+}
+If a new item is added at the beginning, React re-renders all <li> elements.
+This is slow because React can’t track individual items without keys.
+
+Good Code(With Keys) → Optimized Reconciliation
+
+function List({ items }) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+Now, React tracks each <li> using its key.
+If an item is added, React only updates the necessary elements.
+
+Using unique key makes lists render much faster. I guess now you understand why the browser console always gives a warning whenever we forget to give the key attribute.
+
+Performance Optimizations in ReactJS
+Memoization with React.memo()
+
+If you read the re-rendering section carefully, you can see in the 3rd case of re-rendering, when children are not accepting any props from the parent, then it is unnecessary to re-render all children when the parent re-renders. To prevent these unnecessary re-renders, you should wrap children inside React.memo. While exporting, do this:
+
+export default React.memo(MyComponent)
+
+This will prevent re-rendering of 3rd condition. But still re-renders in 1st & 2nd condition which is required to reflect changes in UI.
+
+Example:
+
+import React, { useState, memo } from "react";
+
+const ChildComponent = memo(({ count }) => {
+  console.log("Child Rendered");
+  return <h2>Count: {count}</h2>;
+});
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [value, setValue] = useState("");
+
+  return (
+    <div>
+      <ChildComponent count={count} />
+      <button onClick={() => setCount(count + 1)}>Increment Count</button>
+      <input onChange={(e) => setValue(e.target.value)} placeholder="Type here" />
+    </div>
+  );
+}
+Without React.memo(), ChildComponent re-renders every time App renders, even when value changes.
+With React.memo(), ChildComponent only re-renders if the count prop changes.
+useMemo() - Memoize Computations
+
+Suppose you have a function that takes some argument and, based on that, it does a heavy calculation to get the result. If u don’t use useMemo(), then every time u call this function, it will do a calculation to give the result. Suppose a function takes (a, b) as an argument; you called this function for (2, 3), and it does the calculation; you called this function for the same (2,3) again, and it will do the calculation again. If you use useMemo(), then it will not run the whole function and do the calculations for the same argument again. It will return the previous cached value. If u studied DSA, then it is the same as DP. It doesn’t run the function if it has cached its value.
+
+Example:
+
+import React, { useState, useMemo } from "react";
+
+function expensiveComputation(num) {
+  console.log("Computing...");
+  return num * 2;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [number, setNumber] = useState(5);
+
+  const computedValue = useMemo(() => expensiveComputation(number), [number]);
+
+  return (
+    <div>
+      <h2>Computed Value: {computedValue}</h2>
+      <button onClick={() => setCount(count + 1)}>Increment Count</button>
+    </div>
+  );
+}
+Without useMemo(), expensiveComputation runs on every render.
+With useMemo(), the computation only runs when number changes.
+
+Use useMemo() for expensive calculations that don’t need to be recomputed frequently.
+
+useCallback() - Memoize Functions
+
+When a component is re-rendered, whatever functions u wrote in it will be newly created, and a new reference of that function will be attached. But if you wrap your function in useCallback(), the same function reference will be attached to the next renders, and no new function will be created.
+
+It will do 2 optimisations:
+
+Save time of creating new function definitions on every re-render.
+Suppose this function is passed as props to any child component and if u don’t use useCallback(), then childComponent will re-render even after u wrap it in React.memo() because of 2nd rule of re-rendering (read re-rendering section). Because propsState which has the function changed because a new function reference is created on parent re-rendering. But using useCallback() would prevent it and make use of the same reference of function in every render.
+
+Example:
+
+import React, { useState, useCallback } from "react";
+import ChildComponent from "./ChildComponent";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = useCallback(() => {
+    console.log("Button clicked");
+  }, []);
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Increment Count</button>
+      <ChildComponent onClick={handleClick} />
+    </div>
+  );
+}
+Without useCallback(), handleClick is recreated on every render, causing unnecessary renders in ChildComponent.
+With useCallback(), handleClick is only created once unless dependencies change.
+
+Use useCallback() when passing functions to child components.
+
+End of the blog
+
+If you want to learn System Design, then refer to this blog.
+
+If you liked my efforts and want to support it, then you can donate any amount on the below:
+
+For Indian Users: Pay via UPI => shivambhadani@slc
+For non-Indian Users: https://buymeacoffee.com/shivambhadani_
+
+You can connect me on:
+
+Twitter
+LinkedIn
+Sign up to discover human stories that deepen your understanding of the world.
+Free
+
+Distraction-free reading. No ads.
+
+Organize your knowledge with lists and highlights.
+
+Tell your story. Find your audience.
+
+Sign up for free
+Membership
+
+Read member-only stories
+
+Support writers you read most
+
+Earn money for your writing
+
+Listen to audio narrations
+
+Read offline with the Medium app
+
+Try for $5/month
+React
+Reactjs
+Front End Development
+Interview
+Web Development
+
+396
+
+15
+
+Written by Shivam Bhadani
+2.7K Followers
+·
+30 Following
+
+Software Engineer | All my blogs are free
+
+Follow
+Responses (15)
+
+What are your thoughts?
+
+Cancel
+Respond
+Respond
+
+Also publish to my profile
+
+pradeep kumar
+
+he/him
+
+Feb 9
+
+Very good article
+
+11
+
+Reply
+
+Parth Tiwari
+
+1 day ago
+
+Loved it as always (simple and clear)
+
+1
+
+Reply
+
+Amityadaw
+
+2 days ago
+
+Brilliant
+
+Reply
+
+See all responses
+More from Shivam Bhadani
+
+Shivam Bhadani
+
+System Design For Beginners: Everything You Need in One Article
+One shot solution for any System Design Interview.
+Dec 21, 2024
+6.3K
+68
+
+Shivam Bhadani
+
+AWS Part 1 — Introduction to Cloud and EC2
+From this blog, we are going to start the Amazon Web Services (AWS) Series. If you are an absolute beginner and never heard anything about…
+Aug 10, 2024
+932
+12
+
+Shivam Bhadani
+
+Zomato Interview Experience for SDE 1
+Zomato Interview experience for freshers
+Dec 24, 2024
+490
+6
+
+Shivam Bhadani
+
+Getting Started with CI/CD: An Introductory Guide to GitHub Actions for New Developers
+One shot blog that covers everything about CI/CD
+Jan 3
+231
+5
+See all from Shivam Bhadani
+Recommended from Medium
+
+In
+
+nonstopio
+
+by
+
+Rushi
+
+Boosting React.js Performance with Tree Shaking
 Introduction
+Aug 27, 2024
+739
+3
 
-In today's digital-first world, User Interface (UI) and User Experience (UX) play a pivotal role in defining the success of digital products. Whether it's a mobile application, a website, or enterprise software, UI/UX design determines how users interact with the product and how they feel while doing so. A well-designed UI/UX can boost engagement, increase conversions, and drive customer satisfaction. In this blog, we'll explore the fundamentals of UI/UX design, its importance, best practices, and the latest trends shaping the industry.
+Mate Marschalko
 
-Understanding UI and UX
+18 Advanced React Techniques Every Senior Dev Needs to Know
+As React applications grow more complex, the patterns that were “just fine” when you were starting out might start to feel limiting. Maybe…
+Jan 6
+723
+17
+Lists
+Stories to Help You Grow as a Software Developer
+19 stories
+·
+1605 saves
+General Coding Knowledge
+20 stories
+·
+1920 saves
+Coding & Development
+11 stories
+·
+1012 saves
+The New Chatbots: ChatGPT, Bard, and Beyond
+12 stories
+·
+551 saves
 
-Before diving deep into the details, it's essential to differentiate between UI and UX.
+Dzmitry Ihnatovich
 
-User Interface (UI)
+Event-Driven React with the Observer Pattern: A Clean Alternative to Prop Drilling
+In modern React development, managing state and communication between components can become a challenge, especially as applications grow in…
+Jan 30
+232
+12
 
-UI refers to the visual aspects of a product—everything that users see and interact with. This includes buttons, icons, typography, color schemes, animations, and overall layout. UI design focuses on making a product aesthetically pleasing while ensuring usability and accessibility.
+In
 
-User Experience (UX)
+Level Up Coding
 
-UX, on the other hand, deals with the overall experience a user has while interacting with a product. It involves research, usability testing, information architecture, and interaction design. UX design ensures that users find value in what is being offered by making the product intuitive, seamless, and enjoyable to use.
+by
 
-Importance of UI/UX Design
+Arnold Gunter
 
-1. Enhances User Engagement
+7 JavaScript Array Interview Questions Only 7% of Developers Can Answer
+1. How do you flatten a deeply nested array without using .flat(Infinity)?
+6d ago
+51
+1
 
-A well-thought-out UI/UX design increases user engagement by making it easy and enjoyable for users to navigate through a product. A cluttered interface or poor user flow can drive users away, reducing retention rates.
+Let's Code Future
 
-2. Boosts Conversions and Revenue
+4 Practical Ways Mastering React Re-renders : Unlock Peak Performance🎢
+Imagine your React app as a live theater production, where every component is an actor. When the script (state or props) changes, actors…
+Jan 19
+79
+3
 
-A well-optimized UI/UX can significantly impact conversions. If users can easily find what they need and perform tasks without friction, they are more likely to complete purchases, sign up for services, or take desired actions.
+In
 
-3. Reduces Development Costs
+Towards Dev
 
-Investing in UI/UX from the beginning reduces costs associated with redesigns and fixes later in the development cycle. A poorly designed product often requires multiple revisions, leading to wasted resources.
+by
 
-4. Strengthens Brand Loyalty
+Eishta Mittal
 
-A smooth and engaging user experience fosters trust and loyalty. When users have positive interactions with a product, they are more likely to return and recommend it to others.
+Javascript Interview: 5 promise questions you can see in your interview
+1. Guess the output
+Jan 6
+165
+3
+See more recommendations
 
-Principles of Good UI/UX Design
+Help
 
-1. Simplicity
+Status
 
-The best designs are often the simplest. Users should not have to think too hard to use a product. Reducing cognitive load by eliminating unnecessary elements and focusing on the core functionality enhances usability.
+About
 
-2. Consistency
+Careers
 
-Maintaining consistency in design elements such as fonts, colors, and button styles across the product ensures a cohesive experience. This helps users familiarize themselves with the interface quickly.
+Press
 
-3. Intuitive Navigation
+Blog
 
-A well-structured navigation system allows users to move seamlessly through a product. Clear labels, breadcrumbs, and logical placement of elements enhance user experience.
+Privacy
 
-4. Accessibility
+Terms
 
-Designing with accessibility in mind ensures that people with disabilities can also use the product effectively. This includes implementing screen reader compatibility, color contrast, and keyboard navigation support.
+Text to speech
 
-5. Feedback and Responsiveness
+Teams
 
-Users should receive immediate feedback when they take actions, such as clicking a button or submitting a form. Loading animations, error messages, and success confirmations improve user confidence.
-
-6. Mobile-Friendliness
-
-With a growing number of users accessing digital products via mobile devices, ensuring a responsive design that adapts to different screen sizes is crucial.
-
-The UI/UX Design Process
-
-1. Research and Analysis
-
-Before designing anything, understanding the target audience is essential. Conducting user research, competitor analysis, and surveys helps in creating a user-centric design.
-
-2. Wireframing and Prototyping
-
-Wireframes act as blueprints for the design, outlining the structure and functionality. Prototypes provide a clickable, interactive model of the product before full-scale development begins.
-
-3. Visual Design
-
-The visual design phase involves choosing color schemes, typography, iconography, and UI components that align with the brand identity and user preferences.
-
-4. Usability Testing
-
-Testing the design with real users helps identify issues and gather feedback. This iterative process ensures that the final product meets user expectations.
-
-5. Development and Implementation
-
-Once the UI/UX design is finalized, developers bring it to life through coding. Collaboration between designers and developers ensures a seamless implementation.
-
-6. Post-Launch Analysis and Iteration
-
-Even after launch, continuous monitoring of user behavior through analytics helps in identifying areas for improvement. Regular updates and iterations keep the product relevant and user-friendly.
-
-Latest UI/UX Trends
-
-1. Dark Mode
-
-Dark mode has gained immense popularity due to its aesthetic appeal and reduced eye strain. Many apps and websites now offer dark mode as an alternative theme.
-
-2. Microinteractions
-
-Small animations and interactive elements, such as button hovers and loading spinners, enhance user engagement and provide instant feedback.
-
-3. Neumorphism
-
-A blend of skeuomorphism and flat design, neumorphism creates soft, embossed UI elements that add depth and realism to interfaces.
-
-4. AI-Powered Personalization
-
-Artificial intelligence is being used to personalize user experiences, from content recommendations to dynamic UI changes based on user behavior.
-
-5. Voice User Interfaces (VUIs)
-
-With the rise of voice assistants like Siri and Alexa, VUIs are becoming a crucial part of UI/UX design, enabling hands-free interactions.
-
-6. Augmented Reality (AR) and Virtual Reality (VR)
-
-AR and VR are revolutionizing UI/UX by offering immersive experiences in gaming, e-commerce, and education.
-
-Conclusion
-
-UI/UX design is a crucial aspect of creating successful digital products. A well-crafted user interface combined with a seamless user experience can significantly impact engagement, conversions, and brand loyalty. By following best practices, staying updated with trends, and prioritizing user needs, businesses can create products that not only look good but also function efficiently.
-
-As technology evolves, UI/UX will continue to shape how we interact with digital platforms. Investing in thoughtful design today ensures a better, more intuitive digital experience for users tomorrow.
-
-https://picsum.photos/seed/react/1200/600,https://picsum.photos/seed/john/100/100
+https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png,https://miro.medium.com/v2/da:true/resize:fill:88:88/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:875/1*qOH6EEud0oNI1Fmg47WNeg.png,https://miro.medium.com/v2/resize:fit:875/1*-hk6NCvN_fLL7J1_pcLk7w.png,https://miro.medium.com/v2/resize:fit:875/1*EJwopRpAQFzIGiCX4Hc2Kg.png,https://miro.medium.com/v2/da:true/resize:fit:0/5c50caa54067fd622d2f0fac18392213bf92f6e2fae89b691e62bceb40885e74,https://miro.medium.com/v2/resize:fill:96:96/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fill:128:128/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fill:40:40/1*2IuNfiACO_GRgy8zONOnQQ.png,https://miro.medium.com/v2/resize:fill:40:40/0*2XAYV863RCjtvme_,https://miro.medium.com/v2/resize:fill:40:40/0*tEgDFvwoPDENmTu-,https://miro.medium.com/v2/resize:fit:849/1*NZqp4-jhGa1ZY_-HX95reQ.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*-j67_EIOJ7EE3qAoC3WqZA.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*Cq_JznDWgUC9tZT-5qpwrA.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*DLtRK5FvgbWjE3UYHBdXWg.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*DWlIX7rAES2C0qaMZhNVrg.jpeg,https://miro.medium.com/v2/resize:fill:25:25/1*-G9p2d_lynlNYdHzmOh4ZQ.png,https://miro.medium.com/v2/resize:fit:849/1*ieS3JdaeHPZrH5ZTHQCb0A.jpeg,https://miro.medium.com/v2/resize:fill:25:25/1*pdvQ_QYAVavif1MNzvwARQ.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*yr2O5U-a0-rfY34C6yOXMw.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*_3WdkzQRqIq8tt3Wh-WhbA.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*zPtGTCNOwu1p3kzn_sZFVQ.png,https://miro.medium.com/v2/da:true/resize:fill:60:60/0*kQIvhDkl0ixPpv4z,https://miro.medium.com/v2/resize:fill:60:60/1*ERYx0IB1pN-5ZX98cKAoUw.png,https://miro.medium.com/v2/da:true/resize:fill:60:60/0*gzCeWxDtGmD23QR5,https://miro.medium.com/v2/resize:fill:60:60/1*di4WDrnS1F6_p9GWnxvPmg.png,https://miro.medium.com/v2/resize:fill:60:60/1*PzJLbFrFtNkqPsxielO8zA.jpeg,https://miro.medium.com/v2/resize:fill:60:60/0*3OsUtsnlTx9Svm4c.jpg,https://miro.medium.com/v2/resize:fill:60:60/1*IPZF1hcDWwpPqOz2vL7NxQ.png,https://miro.medium.com/v2/resize:fill:60:60/1*0fHUKyg3xtpNWpop35PR4g.png,https://miro.medium.com/v2/resize:fit:849/0*vf5mFIQDqmm5MtFH,https://miro.medium.com/v2/resize:fill:25:25/1*DlQS_Zi_MSa_18CAobfEEQ.jpeg,https://miro.medium.com/v2/resize:fit:849/0*q42ygMxsUxlwVmQw,https://miro.medium.com/v2/resize:fill:25:25/1*5D9oYBd58pyjMkV_5-zXXQ.jpeg,https://miro.medium.com/v2/resize:fit:849/0*6_BA6lG_tysWHFQh,https://miro.medium.com/v2/resize:fill:25:25/1*1FNnSXafUEYiMfOWmZHYvg.png,https://miro.medium.com/v2/resize:fit:849/1*ydRBzsufzKRCaKvpvZ3cWg.png,https://miro.medium.com/v2/resize:fill:25:25/1*c2OaLMtxURd1SJZOGHALWA.png

@@ -5,6 +5,7 @@ import giveTweetInfo from "./Tweet.js";
 import giveYoutubeInfo from "./Youtube.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import 'dotenv/config';
+import { chunkText } from "./chunk.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,7 +46,31 @@ function detectUrlType(url) {
         return "website";
     }
 }
+async function processChunksWithDelay(text, delayMs = 1000) {
+    const chunks = chunkText(text); // Ensuring no chunk exceeds 10,000 bytes
+    const embeddings = [];
+    console.log(`Chunk Type: ${typeof chunks}`);
+    // await new Promise(res => setTimeout(res, 2000))
+    for (const chunk of chunks) {
+        const byteSize = new TextEncoder().encode(chunk).length;
+        console.log(`Sending chunk of size: ${byteSize} bytes`);
 
+        if (byteSize > 10000) {
+            console.warn("🚨 Chunk too large after processing, skipping:", byteSize);
+            continue;
+        }
+
+        try {
+            const embedding = await createEmbeddings(chunk);
+            embeddings.push(embedding);
+            await new Promise(res => setTimeout(res, delayMs)); // Avoid rate limits
+        } catch (error) {
+            console.error("Error processing chunk:", error);
+        }
+    }
+
+    return embeddings;
+}
 // Process URL and store embeddings
 app.post("/process-url", async (req, res) => {
     try {
@@ -85,10 +110,19 @@ app.post("/process-url", async (req, res) => {
         }
 
         console.log("Final Content:", content);// Debugging log
+        console.log(Buffer.byteLength(content));
 
 
+        // const embeddings = await createEmbeddings(JSON.stringify(content).trim());
+        // const chunks = chunkText(content);
+        // chunks.forEach((chunk, index) => {
+        //     console.log(`Chunk ${index + 1} size:`, new TextEncoder().encode(chunk).length, "bytes");
+        // });
 
-        const embeddings = await createEmbeddings(JSON.stringify(content).trim());
+        
+        const embeddings = await processChunksWithDelay(content);
+        
+        
         allMemories.push({ url, content, embeddings });
 
         res.json({ message: "Embeddings stored", url, result });
