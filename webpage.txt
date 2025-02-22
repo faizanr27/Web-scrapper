@@ -1,4 +1,4 @@
-Mastering Advanced ReactJS Concepts: Essential Knowledge for Every Frontend Developer | by Shivam Bhadani | Feb, 2025 | Medium
+How to add cron jobs on node-js runtime ? | by DevSphere | Medium
 
 Write
 
@@ -6,647 +6,149 @@ Sign up
 
 Sign in
 
-Mastering Advanced ReactJS Concepts: Essential Knowledge for Every Frontend Developer
+How to add cron jobs on node-js runtime ?
 
-Shivam Bhadani
+DevSphere
 
 ·
 
 Follow
 
-12 min read
+3 min read
 ·
-Feb 9, 2025
+Dec 1, 2024
 
-396
+101
 
-15
+C
+ron jobs are piece of code which executes automatically after a certain period of time in simple words.
 
-In this blog, we will study all the advanced concepts of ReactJS. You can clear any Frontend Developer interview after reading this one blog. After reading this, you can also build your own UI library like ReactJS.
+They use time based job scheduler known as cron. The schedule is defined by a cron expression, which specifies when the task should run.
 
-Content of this blog
-What is Rendering, and how it happens?
-What is Re-rendering, and when does a component re-render?
-Understanding Virtual DOM
-What is Reconciliation Algorithm?
-Performance Optimizations in ReactJS
-What is Rendering, and how it happens?
+Expression :
 
-If you have worked with ReactJS, you may have heard much about this term. Let's understand it in depth.
+* * * * *  
+- - - - -
+| | | | |
+| | | | +-- Day of the Week (0 - 6) (Sunday to Saturday)
+| | | +---- Month (1 - 12) (January to December)
+| | +------ Day of the Month (1 - 31)
+| +-------- Hour (0 - 23)
++---------- Minute (0 - 59)
 
-In ReactJS, we write JSX. JSX stands for JavaScript XML. It is a syntax introduced by ReactJS, which is similar to HTML. Our frontend apps run on browsers, and browsers don’t understand JSX. The only language browsers understand is JavaScript. Somehow, this JSX needs to be transformed into JavaScript first. It is done by a ReactJS compiler called Babel.
+Cron expressions allow the use of special characters to create more flexible schedules.
 
-How does Babel convert JSX to JavaScript?
+Comma(,)
 
-It takes the JSX and calls the React.createElement() function. This createElement() function returns a JavaScript Object called React Element.
+The comma , is used to specify a list of values for a field. It allows you to define multiple values in one field.
 
-Just read the below sentence and put it into your mind. We will learn the entire process in detail:
-The main goal is to get React Element from JSX. You can manually write code by calling React.createElement(), or you can write JSX and let the babel convert your JSX code into React Element.
+Eg : 5,10,15 * * * * means the task will run at minute 5, 10, and 15 of every hour.
 
-What is React.createElement()?
+2. Hyphen(-)
 
-React.createElement() is the fundamental function used by React to create elements (React Nodes). JSX is just a syntactic sugar for React.createElement().
+The hyphen - specifies a range of values.
 
-First, we will learn how to translate JSX into React.createElement() function call then we will learn what will be the output of this function.
+Example: 1-5 * * * * means the task will run every day at hours 1 through 5 (i.e., 1:00, 2:00, ..., 5:00).
 
-For example, if you write this JSX:
+3. Slash(/)
 
-const jsx = <h1>Hello, React!</h1>;
+The slash / is used to specify step values. It tells the cron job to run at intervals within the specified range.
 
-It is internally converted to:
+Example: */5 * * * * means the task will run every 5 minutes.
 
-const element = React.createElement("h1", null, "Hello, React!");
-Syntax of React.createElement()
-React.createElement(type, props, ...children)
+4. Question Mark (?)
 
-Where:
+The question mark ? is used in some systems (like Quartz Scheduler) in place of an asterisk to indicate "no specific value" for day-of-month or day-of-week fields.
 
-type (string or component):
+Example: 0 0 1 * ? means "run at midnight on the first day of every month," with no specific day of the week.
 
-If it’s a string, it represents a standard HTML tag (e.g., "h1", "div").
-If it’s a function or class, it represents a React component.
+Now lest implement cron jobs on node js :
 
-props (object):
+Install packages
 
-Attributes like className, id, onClick, etc.
-Can be null if no props are needed.
+npm install node-cron
 
-...children (optional):
+Create a file app.js
 
-Content inside the element (text, other elements, or components).
+const cron = require('node-cron');
 
-Example 1:
-
-JSX:
-
-const Jsx = <h1>Hello, React!</h1>;
-
-Its React.createElement function call:
-
-const element = React.createElement("h1", null, "Hello, React!");
-
-Example 2:
-
-JSX:
-
-const Jsx = <h1 className="title">Hello, React!</h1>;
-
-Its React.createElement function call:
-
-const element = React.createElement("h1", { className: "title" }, "Hello, React!");
-
-Example 3:
-
-JSX:
-
-<div>
-  <h1>Hello</h1>
-  <p>Welcome to React</p>
-</div>
-
-Its React.createElement function call:
-
-const element = React.createElement(
-  "div",
-  null,
-  React.createElement("h1", null, "Hello"),
-  React.createElement("p", null, "Welcome to React")
-);
-
-Example 4:
-
-JSX:
-
-const Jsx = <Card data = {cardData} />
-
-Its React.createElement function call:
-
-const element = React.createElement(Card, { data: cardData })
-
-As I told you, children are optional, so if there are no children, then we will omit it in the function call.
-
-Complex Example:
-
-I guess we understood the simple examples. Let's do a complex example of this to fully understand:
-
-JSX:
-
-function App() {
-  return (
-    <div className="container">
-      <h1>Welcome to React</h1>
-      <UserCard name="Shivam" age={22} />
-      <button onClick={() => alert("Button Clicked!")}>Click Me</button>
-    </div>
-  );
-}
-
-function UserCard({ name, age }) {
-  return (
-    <div className="user-card">
-      <h2>{name}</h2>
-      <p>Age: {age}</p>
-    </div>
-  );
-}
-
-We will do step by step.
-
-Step 1: Convert UserCard Component
-
-function UserCard(props) {
-  return React.createElement(
-    "div",
-    { className: "user-card" },
-    React.createElement("h2", null, props.name),
-    React.createElement("p", null, `Age: ${props.age}`)
-  );
-}
-
-Step 2: Convert the App Component
-
-function App() {
-  return React.createElement(
-    "div",
-    { className: "container" },
-    React.createElement("h1", null, "Welcome to React"),
-    React.createElement(UserCard, { name: "Shivam", age: 22 }),
-    React.createElement(
-      "button",
-      { onClick: () => alert("Button Clicked!") },
-      "Click Me"
-    )
-  );
-}
-
-Now, we understand how to convert JSX into React.createElement() function call. You can either write the HTML kind of syntax or directly write the createElement() function into your files. If you write HTML then internally babel will convert that into the createElement() function call.
-
-Output of React.createElement()
-
-This function call returns a plain JavaScript object and this object is called React Element.
-
-React.createElement(type, props, ...children)
-
-It returns an object like this:
-
-{
-  type: "",
-  props: {
-    
-  },
-  key: "",
-  ref: ""
-}
-
-Note: Inside props you will get props (attributes of tag) as well as children also.
-
-<div>hello</div> and <div chilren=”hello” /> is same. So, along with other attributes, you get children also in the props object.
-
-Example:
-
-const element = React.createElement("h1", { className: "title" }, "Hello, React!");
-console.log(element);
-
-Output:
-
-{
-  type: "h1",
-  props: {
-    className: "title",
-    children: "Hello, React!"
-  },
-  key: null,
-  ref: null,
-  _owner: null,
-  _store: {}
-}
-Breaking Down the Output
-type: "h1" → This tells React that this element represents an <h1> tag.
-props → This contains the attributes (like className) and child elements.
-className: "title" → This is the className prop passed to the <h1>.
-children: "Hello, React!" → The content inside the <h1> tag.
-key → If you rendered the list with map(), then you must have passed the key. This is the same key. You will learn that actual use-case of key in this blog.
-ref → Used to directly access and interact with DOM. Maybe if you used useRef() then you know this.
-_owner and _store → Internal React properties (not important for basic use).
-
-Example:
-
-JSX:
-
-<div id = "container">
-  <h1>Hello</h1>
-  <p>Welcome to React</p>
-</div>
-
-React.createElement function call:
-
-const element = React.createElement(
-  "div",
-  { id: "container" },
-  React.createElement("h1", null, "Hello"),
-  React.createElement("p", null, "Welcome to React")
-);
-console.log(element);
-
-Output:
-
-{
-  type: "div",
-  props: {
-    id: "container",
-    children: [
-      {
-        type: "h1",
-        props: { children: "Hello" },
-        key: null,
-        ref: null
-      },
-      {
-        type: "p",
-        props: { children: "Welcome to React" },
-        key: null,
-        ref: null
-      }
-    ]
-  },
-  key: null,
-  ref: null
-}
-
-I guess we have done enough examples to understand this concept. If you still have doubts, then you can ask in the comments.
-
-What exactly is Rendering?
-
-Rendering in React refers to the process of taking React elements (JSX or React.createElement() objects) and converting them into actual DOM elements that appear on the screen.
-
-Rendering are of two types:
-
-Intial Rendering
-Re-Rendering
-How does Initial Rendering happen?
-
-Below is the code that does the work:
-
-function App() {
-  return <h1>Hello, React!</h1>;
-}
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
-
-If you do create a reactJS app, then go to index.jsx to see the code.
-
-Steps:
-
-App() returns <h1>Hello, React!</h1>.
-React converts that into React Element Object.
-{
-  type: "h1",
-  props: { children: "Hello, React!" },
-}
-React creates a Virtual DOM.
-React updates the real DOM (<h1> is inserted into #root).
-
-In a large application, there are thousands of components and nestings, so we end up with a massive JS Object in a tree-like structure. Constructing a DOM from this huge JS object takes a lot of time. But React only constructs DOM from scratch the first time.
-
-You have noticed that when you build your React app the first time, it takes a lot of time. But in the next renders/ re-renders, it doesn’t take time. This optimisation is due to the “Virtual DOM” and “reconciliation” algorithms.
-
-We will study Virtual DOM in detail in this blog.
-
-What is Re-rendering, and when does a component re-render?
-
-Re-rendering in React is the process where a component updates and executes again to reflect changes in the UI. However, not every change triggers a re-render — React is optimized to only re-render components when necessary.
-
-A component re-renders when:
-
-Its State Changes (useState or this.setState is updated)
-Its Props Change (Parent component passes new props)
-Its Parent Re-Renders (Even if props don’t change)
-Re-Rendering Due to State Changes
-
-A component will re-render when its state is updated using useState .
-
-import React, { useState } from "react";
-
-function Counter() {
-  const [count, setCount] = useState(0);
-
-  console.log("Counter Re-Rendered!");
-
-  return (
-    <div>
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-    </div>
-  );
-}
-
-export default Counter;
-
-Here, whenever button is clicked, the count state will change and the component will re-render to show to latest change.
-
-Re-Rendering Due to Props Change
-function Parent() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <Child count={count} />
-      <button onClick={() => setCount(count + 1)}>Update Count</button>
-    </div>
-  );
-}
-
-
-function Child({ count }) {
-  console.log("Child Re-Rendered!");
-
-  return <h1>Count: {count}</h1>;
-}
-
-export default Parent;
-
-If you click on the button then the count state will change. It will re-render the Parent (due to first rule) and also re-render the Child because Child is taken count as props. Whenever the state of the props changes, then the component re-renders.
-
-Re-Rendering Due to Parent Re-Rendering
-
-Even if a child’s props don’t change, it will still re-render if its parent re-renders.
-
-function Parent() {
-  const [count, setCount] = useState(0);
-
-  console.log("Parent Re-Rendered!");
-
-  return (
-    <div>
-      <button onClick={() => setCount(count + 1)}>Re-Render Parent</button>
-      <Child />
-    </div>
-  );
-}
-
-
-function Child() {
-  console.log("Child Re-Rendered!");
-  return <h1>Hello</h1>;
-}
-
-export default Parent;
-Parent component re-renders (due to state change).
-Child component also re-renders, even though it receives no props.
-
-If you don’t want the Child to re-render in this case, then you can wrap the Child in React.memo(). It will prevent re-rendering in this condition. It will only re-render on the first and second conditions.
-
-You may be wondering, if we don’t use React memo() and the entire subtree re-renders whenever any component re-renders, then wouldn’t our app be too slow?
-Ans) ReactJS is very clever. It uses Virtual DOM and Reconciliation algo to optimise it. We will study it in the next section of this blog.
-
-React 18+ Strict Mode Double Rendering
-
-In React 18+, components inside <React.StrictMode> re-render twice in development mode to detect side effects.
-
-import React from "react";
-import ReactDOM from "react-dom";
-
-function App() {
-  console.log("Component Rendered!");
-  return <h1>Hello</h1>;
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-In development mode, you’ll see “Component Rendered!” twice in the console.
-This doesn’t happen in production, so it’s safe to ignore it.
-
-Understanding Virtual DOM
-
-The Virtual DOM (V-DOM) is a lightweight copy of the real DOM that React maintains in memory. It allows React to efficiently update the UI without directly modifying the real DOM on every change.
-
-Why does React use a Virtual DOM?
-
-The real DOM is slow → Direct updates cause performance issues.
-Updating the real DOM is expensive → React minimizes unnecessary changes.
-React batches updates efficiently → React only updates what’s needed.
-How Does the Virtual DOM Work?
-
-Step 1: Render Phase (Creating the V-DOM):
-
-function App() {
-  return <h1>Hello, World!</h1>;
-}
-
-React calls App(), creating a Virtual DOM representation of:
-
-{
-  "type": "h1",
-  "props": { "children": "Hello, World!" }
-}
-
-This V-DOM is not real, just a JavaScript object in a tree-like structure.
-
-Step 2: Diffing (Comparing Old & New Virtual DOM):
-When state/props change, React creates a new Virtual DOM and compares it with the previous Virtual DOM.
-
-function Counter() {
-  const [count, setCount] = React.useState(0);
-
-  return <h1>Count: {count}</h1>;
-}
-
-Clicking a button updates count → React generates a new Virtual DOM:
-
-{
-  "type": "h1",
-  "props": { "children": "Count: 1" }
-}
-
-React compares this with the old V-DOM using its Reconciliation Algorithm.
-
-Step 3: Patching the Real DOM (Efficient Updates)
-
-React finds the differences (diffing step).
-React updates only the changed parts in the real DOM.
-
-Example:
-
-If only text inside <h1> changed from "Count: 0" → "Count: 1",
-React updates only the text, not the entire <h1> tag.
-
-How does this update happen?
-Ans) If you learnt DOM in JavaScript, then it's the same. It uses document.getElementByID().innerHTML = “Count: 1”. It's simple JavaScript internally. What part should be updated, it chooses cleverly with the help of diffing algorithms to minimize DOM updates.
-
-What is Reconciliation in React?
-
-Reconciliation is React’s algorithm to efficiently update the real DOM by minimizing changes.
-
-Reconciliation Steps:
-Generate a new Virtual DOM when state/props change.
-Compare (diff) the new V-DOM with the previous V-DOM.
-Identify what has changed (React’s Diffing Algorithm).
-Update only the changed parts in the real DOM.
-React’s Diffing Algorithm (How React Detects Changes Efficiently)
-Rule 1: Elements of Different Types Cause Full Re-Renders:
-If the element type changes, React destroys the old element and creates a new one. If you forgot what the type is, then refer to the argument of React.createElement() above.
-function App({ showText }) {
-  return showText ? <h1>Hello</h1> : <p>Hello</p>;
-}
-Changing <h1> to <p> makes React remove <h1> and create <p> from scratch!
-This is slow because React deletes the old node instead of modifying it.
-
-2. Rule 2: Elements of the Same Type Are Updated Efficiently:
-If the element type is the same, React only updates the changed attributes.
-
-function App({ text }) {
-  return <h1 className="title">{text}</h1>;
-}
-Changing text from "Hello" → "World" makes React only update the text.
-The <h1> element is not recreated, making updates very fast.
-
-3. Rule 3: Lists Are Compared Using Keys (Keyed Diffing):
-When rendering lists, React uses keys to track changes efficiently.
-
-Bad Code (No Keys) → Inefficient Reconciliation
-
-function List({ items }) {
-  return (
-    <ul>
-      {items.map((item) => (
-        <li>{item}</li>
-      ))}
-    </ul>
-  );
-}
-If a new item is added at the beginning, React re-renders all <li> elements.
-This is slow because React can’t track individual items without keys.
-
-Good Code(With Keys) → Optimized Reconciliation
-
-function List({ items }) {
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.name}</li>
-      ))}
-    </ul>
-  );
-}
-Now, React tracks each <li> using its key.
-If an item is added, React only updates the necessary elements.
-
-Using unique key makes lists render much faster. I guess now you understand why the browser console always gives a warning whenever we forget to give the key attribute.
-
-Performance Optimizations in ReactJS
-Memoization with React.memo()
-
-If you read the re-rendering section carefully, you can see in the 3rd case of re-rendering, when children are not accepting any props from the parent, then it is unnecessary to re-render all children when the parent re-renders. To prevent these unnecessary re-renders, you should wrap children inside React.memo. While exporting, do this:
-
-export default React.memo(MyComponent)
-
-This will prevent re-rendering of 3rd condition. But still re-renders in 1st & 2nd condition which is required to reflect changes in UI.
-
-Example:
-
-import React, { useState, memo } from "react";
-
-const ChildComponent = memo(({ count }) => {
-  console.log("Child Rendered");
-  return <h2>Count: {count}</h2>;
+cron.schedule('* * * * *', () => {
+  console.log('Task runs every minute');
 });
 
-function App() {
-  const [count, setCount] = useState(0);
-  const [value, setValue] = useState("");
+This file will schedule a cron job which will run automatically after every minute.
 
-  return (
-    <div>
-      <ChildComponent count={count} />
-      <button onClick={() => setCount(count + 1)}>Increment Count</button>
-      <input onChange={(e) => setValue(e.target.value)} placeholder="Type here" />
-    </div>
-  );
-}
-Without React.memo(), ChildComponent re-renders every time App renders, even when value changes.
-With React.memo(), ChildComponent only re-renders if the count prop changes.
-useMemo() - Memoize Computations
+Run the app
 
-Suppose you have a function that takes some argument and, based on that, it does a heavy calculation to get the result. If u don’t use useMemo(), then every time u call this function, it will do a calculation to give the result. Suppose a function takes (a, b) as an argument; you called this function for (2, 3), and it does the calculation; you called this function for the same (2,3) again, and it will do the calculation again. If you use useMemo(), then it will not run the whole function and do the calculations for the same argument again. It will return the previous cached value. If u studied DSA, then it is the same as DP. It doesn’t run the function if it has cached its value.
+node app.js
 
-Example:
+Now lets see how we use cron job on application server deployed on vercel .
 
-import React, { useState, useMemo } from "react";
+Starter commands :
 
-function expensiveComputation(num) {
-  console.log("Computing...");
-  return num * 2;
-}
+mkdir node-cron-example
+cd node-cron-example
+npm init -y
+npm i express node-cron
 
-function App() {
-  const [count, setCount] = useState(0);
-  const [number, setNumber] = useState(5);
+Create index.js :
 
-  const computedValue = useMemo(() => expensiveComputation(number), [number]);
+const express = require('express');
+const cron = require('node-cron');
 
-  return (
-    <div>
-      <h2>Computed Value: {computedValue}</h2>
-      <button onClick={() => setCount(count + 1)}>Increment Count</button>
-    </div>
-  );
-}
-Without useMemo(), expensiveComputation runs on every render.
-With useMemo(), the computation only runs when number changes.
+const app = express();
+const port = 3000;
 
-Use useMemo() for expensive calculations that don’t need to be recomputed frequently.
+app.get('/health', (req, res) => {
+  res.status(200).send('Server is healthy');
+});
 
-useCallback() - Memoize Functions
+app.get('/cron', (req, res) => {
+  console.log('Cron job triggered manually');
+  res.status(200).send('Cron job was triggered');
+});
 
-When a component is re-rendered, whatever functions u wrote in it will be newly created, and a new reference of that function will be attached. But if you wrap your function in useCallback(), the same function reference will be attached to the next renders, and no new function will be created.
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
 
-It will do 2 optimisations:
+Create vercel.json file :
 
-Save time of creating new function definitions on every re-render.
-Suppose this function is passed as props to any child component and if u don’t use useCallback(), then childComponent will re-render even after u wrap it in React.memo() because of 2nd rule of re-rendering (read re-rendering section). Because propsState which has the function changed because a new function reference is created on parent re-rendering. But using useCallback() would prevent it and make use of the same reference of function in every render.
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.js",
+        "use": "@vercel/node",
+        "config": { "includeFiles": ["dist/**"] }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "index.js"
+      }
+    ],
+    "crons": [
+      {
+        "path": "/api/cron",
+        "schedule": "0 0 1 * *"
+      }
+    ]
+  }
 
-Example:
+Note : Hobby account on vercel limits your cron job to only run twice a day .
 
-import React, { useState, useCallback } from "react";
-import ChildComponent from "./ChildComponent";
+Now you can deploy this server on vercel by creating a new git repo and importing it on vercel and click deploy .
 
-function App() {
-  const [count, setCount] = useState(0);
+Useful links
 
-  const handleClick = useCallback(() => {
-    console.log("Button clicked");
-  }, []);
+https://vercel.com/docs/cron-jobs
 
-  return (
-    <div>
-      <button onClick={() => setCount(count + 1)}>Increment Count</button>
-      <ChildComponent onClick={handleClick} />
-    </div>
-  );
-}
-Without useCallback(), handleClick is recreated on every render, causing unnecessary renders in ChildComponent.
-With useCallback(), handleClick is only created once unless dependencies change.
+https://vercel.com/docs/cron-jobs/usage-and-pricing
 
-Use useCallback() when passing functions to child components.
+Written By : DevSphere
 
-End of the blog
-
-If you want to learn System Design, then refer to this blog.
-
-If you liked my efforts and want to support it, then you can donate any amount on the below:
-
-For Indian Users: Pay via UPI => shivambhadani@slc
-For non-Indian Users: https://buymeacoffee.com/shivambhadani_
-
-You can connect me on:
-
-Twitter
-LinkedIn
 Sign up to discover human stories that deepen your understanding of the world.
 Free
 
@@ -670,25 +172,23 @@ Listen to audio narrations
 Read offline with the Medium app
 
 Try for $5/month
-React
-Reactjs
-Front End Development
-Interview
-Web Development
+Cronjob
+Nodejs
+JavaScript
+Backend
+Vercel
 
-396
+101
 
-15
-
-Written by Shivam Bhadani
-2.7K Followers
+Written by DevSphere
+11 Followers
 ·
-30 Following
+8 Following
 
-Software Engineer | All my blogs are free
+We are group of 4 tech enthusiasts who wants to share our experience.
 
 Follow
-Responses (15)
+No responses yet
 
 What are your thoughts?
 
@@ -698,155 +198,113 @@ Respond
 
 Also publish to my profile
 
-pradeep kumar
+More from DevSphere
 
-he/him
+DevSphere
 
-Feb 9
+Understanding intentJs : New Backend Framework In Town
+Intent.js is an open-source backend framework for Node.js that provides multiple built-in features for building efficient and scalable web…
+Dec 30, 2024
+51
 
-Very good article
+DevSphere
 
-11
+ALL ABOUT COMPETITIVE PROGRAMMING
+LEVELS AND TOPICS (WITH RESOURCES)
+Dec 2, 2024
+51
+2
 
-Reply
+DevSphere
 
-Parth Tiwari
+Mastering Pre-Signed URLs in S3 with Node.js: Secure File Access
+Lets see what does pre-signed URL even mean ?
+Dec 15, 2024
+51
 
-1 day ago
+DevSphere
 
-Loved it as always (simple and clear)
-
+Exploring Prime Factorization and the Sieve of Eratosthenes in Number Theory
+We will use C++ to demonstrate these concepts, explaining how to implement a prime check, prime factorization, and the Sieve of…
+Dec 12, 2024
 1
-
-Reply
-
-Amityadaw
-
-2 days ago
-
-Brilliant
-
-Reply
-
-See all responses
-More from Shivam Bhadani
-
-Shivam Bhadani
-
-System Design For Beginners: Everything You Need in One Article
-One shot solution for any System Design Interview.
-Dec 21, 2024
-6.3K
-68
-
-Shivam Bhadani
-
-AWS Part 1 — Introduction to Cloud and EC2
-From this blog, we are going to start the Amazon Web Services (AWS) Series. If you are an absolute beginner and never heard anything about…
-Aug 10, 2024
-932
-12
-
-Shivam Bhadani
-
-Zomato Interview Experience for SDE 1
-Zomato Interview experience for freshers
-Dec 24, 2024
-490
-6
-
-Shivam Bhadani
-
-Getting Started with CI/CD: An Introductory Guide to GitHub Actions for New Developers
-One shot blog that covers everything about CI/CD
-Jan 3
-231
-5
-See all from Shivam Bhadani
+See all from DevSphere
 Recommended from Medium
 
 In
 
-nonstopio
+Let’s Code Future
 
 by
 
-Rushi
+Let's Code Future
 
-Boosting React.js Performance with Tree Shaking
-Introduction
-Aug 27, 2024
-739
-3
+Top 10 + Lightning-Fast Developer Tools to Speed Up Your Build, Deployment, and Workflow⚡🔥
+In the fast-paced world of web development, staying ahead of the curve often means embracing tools that can make coding, deployment, and…
+Feb 11
+212
+4
 
-Mate Marschalko
+Ankit
 
-18 Advanced React Techniques Every Senior Dev Needs to Know
-As React applications grow more complex, the patterns that were “just fine” when you were starting out might start to feel limiting. Maybe…
-Jan 6
-723
-17
+Dynamic Route Handling in Next.js: Optimizing for Large Datasets Without Logs
+Handling large datasets in Next.js dynamic routes? Learn optimized techniques to keep things fast & scalable! 🚀
+Feb 10
+22
+1
 Lists
 Stories to Help You Grow as a Software Developer
 19 stories
 ·
-1605 saves
+1606 saves
 General Coding Knowledge
 20 stories
 ·
-1920 saves
+1923 saves
 Coding & Development
 11 stories
 ·
-1012 saves
-The New Chatbots: ChatGPT, Bard, and Beyond
-12 stories
+1013 saves
+data science and AI
+40 stories
 ·
-551 saves
+334 saves
+
+Vitaliy Korzhenko
+
+Node.js Best Practices for Production-Ready Applications
+1. Structuring Your Project for Maintainability
+Nov 13, 2024
+15
+
+In
+
+Stackademic
+
+by
+
+Dipak Ahirav
+
+Day 6: Create a File Upload API in Node.js Without Multer
+Learn how to build a file upload API in Node.js from scratch using only the core modules — no third-party libraries needed.
+Jan 20
+41
+1
+
+Chandan Kumar
+
+Top 10 Websites Paying Daily for Simple Work from Home Jobs.
+In today’s fast-paced world, the flexibility to earn money from the comfort of your home is more valuable than ever. Whether you’re looking…
+Oct 12, 2024
+94
+2
 
 Dzmitry Ihnatovich
 
-Event-Driven React with the Observer Pattern: A Clean Alternative to Prop Drilling
-In modern React development, managing state and communication between components can become a challenge, especially as applications grow in…
-Jan 30
-232
-12
-
-In
-
-Level Up Coding
-
-by
-
-Arnold Gunter
-
-7 JavaScript Array Interview Questions Only 7% of Developers Can Answer
-1. How do you flatten a deeply nested array without using .flat(Infinity)?
-6d ago
-51
-1
-
-Let's Code Future
-
-4 Practical Ways Mastering React Re-renders : Unlock Peak Performance🎢
-Imagine your React app as a live theater production, where every component is an actor. When the script (state or props) changes, actors…
-Jan 19
-79
-3
-
-In
-
-Towards Dev
-
-by
-
-Eishta Mittal
-
-Javascript Interview: 5 promise questions you can see in your interview
-1. Guess the output
-Jan 6
-165
-3
+Frontend Development Trends in 2025
+This is my thoughts based on current trends and driven by advancements in technology, changing user expectations, and the need for more…
+Feb 2
+11
 See more recommendations
 
 Help
@@ -869,4 +327,4 @@ Text to speech
 
 Teams
 
-https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png,https://miro.medium.com/v2/da:true/resize:fill:88:88/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:875/1*qOH6EEud0oNI1Fmg47WNeg.png,https://miro.medium.com/v2/resize:fit:875/1*-hk6NCvN_fLL7J1_pcLk7w.png,https://miro.medium.com/v2/resize:fit:875/1*EJwopRpAQFzIGiCX4Hc2Kg.png,https://miro.medium.com/v2/da:true/resize:fit:0/5c50caa54067fd622d2f0fac18392213bf92f6e2fae89b691e62bceb40885e74,https://miro.medium.com/v2/resize:fill:96:96/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fill:128:128/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fill:40:40/1*2IuNfiACO_GRgy8zONOnQQ.png,https://miro.medium.com/v2/resize:fill:40:40/0*2XAYV863RCjtvme_,https://miro.medium.com/v2/resize:fill:40:40/0*tEgDFvwoPDENmTu-,https://miro.medium.com/v2/resize:fit:849/1*NZqp4-jhGa1ZY_-HX95reQ.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*-j67_EIOJ7EE3qAoC3WqZA.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*Cq_JznDWgUC9tZT-5qpwrA.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*DLtRK5FvgbWjE3UYHBdXWg.png,https://miro.medium.com/v2/resize:fill:25:25/0*aNGNp86u8ktNhe63,https://miro.medium.com/v2/resize:fit:849/1*DWlIX7rAES2C0qaMZhNVrg.jpeg,https://miro.medium.com/v2/resize:fill:25:25/1*-G9p2d_lynlNYdHzmOh4ZQ.png,https://miro.medium.com/v2/resize:fit:849/1*ieS3JdaeHPZrH5ZTHQCb0A.jpeg,https://miro.medium.com/v2/resize:fill:25:25/1*pdvQ_QYAVavif1MNzvwARQ.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*yr2O5U-a0-rfY34C6yOXMw.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*_3WdkzQRqIq8tt3Wh-WhbA.jpeg,https://miro.medium.com/v2/resize:fill:60:60/1*zPtGTCNOwu1p3kzn_sZFVQ.png,https://miro.medium.com/v2/da:true/resize:fill:60:60/0*kQIvhDkl0ixPpv4z,https://miro.medium.com/v2/resize:fill:60:60/1*ERYx0IB1pN-5ZX98cKAoUw.png,https://miro.medium.com/v2/da:true/resize:fill:60:60/0*gzCeWxDtGmD23QR5,https://miro.medium.com/v2/resize:fill:60:60/1*di4WDrnS1F6_p9GWnxvPmg.png,https://miro.medium.com/v2/resize:fill:60:60/1*PzJLbFrFtNkqPsxielO8zA.jpeg,https://miro.medium.com/v2/resize:fill:60:60/0*3OsUtsnlTx9Svm4c.jpg,https://miro.medium.com/v2/resize:fill:60:60/1*IPZF1hcDWwpPqOz2vL7NxQ.png,https://miro.medium.com/v2/resize:fill:60:60/1*0fHUKyg3xtpNWpop35PR4g.png,https://miro.medium.com/v2/resize:fit:849/0*vf5mFIQDqmm5MtFH,https://miro.medium.com/v2/resize:fill:25:25/1*DlQS_Zi_MSa_18CAobfEEQ.jpeg,https://miro.medium.com/v2/resize:fit:849/0*q42ygMxsUxlwVmQw,https://miro.medium.com/v2/resize:fill:25:25/1*5D9oYBd58pyjMkV_5-zXXQ.jpeg,https://miro.medium.com/v2/resize:fit:849/0*6_BA6lG_tysWHFQh,https://miro.medium.com/v2/resize:fill:25:25/1*1FNnSXafUEYiMfOWmZHYvg.png,https://miro.medium.com/v2/resize:fit:849/1*ydRBzsufzKRCaKvpvZ3cWg.png,https://miro.medium.com/v2/resize:fill:25:25/1*c2OaLMtxURd1SJZOGHALWA.png
+https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png,https://miro.medium.com/v2/resize:fill:88:88/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/da:true/resize:fit:0/5c50caa54067fd622d2f0fac18392213bf92f6e2fae89b691e62bceb40885e74,https://miro.medium.com/v2/resize:fill:96:96/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fill:128:128/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fit:679/1*yuVzMhCJyDENbyhwAsrkwA.png,https://miro.medium.com/v2/resize:fill:20:20/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fit:679/1*yuVzMhCJyDENbyhwAsrkwA.png,https://miro.medium.com/v2/resize:fill:20:20/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fit:679/1*yuVzMhCJyDENbyhwAsrkwA.png,https://miro.medium.com/v2/resize:fill:20:20/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fit:679/1*yuVzMhCJyDENbyhwAsrkwA.png,https://miro.medium.com/v2/resize:fill:20:20/1*DUbRCZRvHjz3qTAy1SrkNw.jpeg,https://miro.medium.com/v2/resize:fit:679/1*qq2ht4YABNOBZ5lfiZWJfQ.png,https://miro.medium.com/v2/resize:fill:20:20/1*QXfeVFVbIzUGnlwXoOZvyQ.png,https://miro.medium.com/v2/resize:fit:679/0*6pWuUb8BvQNz5eJH,https://miro.medium.com/v2/resize:fill:20:20/1*FZQmGhGfj4f4gHYh3e3Olg@2x.jpeg,https://miro.medium.com/v2/resize:fill:48:48/1*yr2O5U-a0-rfY34C6yOXMw.jpeg,https://miro.medium.com/v2/resize:fill:48:48/1*_3WdkzQRqIq8tt3Wh-WhbA.jpeg,https://miro.medium.com/v2/resize:fill:48:48/1*zPtGTCNOwu1p3kzn_sZFVQ.png,https://miro.medium.com/v2/da:true/resize:fill:48:48/0*kQIvhDkl0ixPpv4z,https://miro.medium.com/v2/resize:fill:48:48/1*ERYx0IB1pN-5ZX98cKAoUw.png,https://miro.medium.com/v2/da:true/resize:fill:48:48/0*gzCeWxDtGmD23QR5,https://miro.medium.com/v2/resize:fill:48:48/1*di4WDrnS1F6_p9GWnxvPmg.png,https://miro.medium.com/v2/resize:fill:48:48/1*PzJLbFrFtNkqPsxielO8zA.jpeg,https://miro.medium.com/v2/resize:fill:48:48/1*Fwpkf8H5PwNrzSzMYUFjjA.png,https://miro.medium.com/v2/resize:fill:48:48/1*G49cai7vIuhFeSwb4LCuSQ.jpeg,https://miro.medium.com/v2/resize:fill:48:48/1*HlJ2e41GVVzzjWYiX0dU1g.png,https://miro.medium.com/v2/resize:fit:679/0*EwGbDqUAnfsacesE.jpg,https://miro.medium.com/v2/resize:fill:20:20/1*lzUS_0oJRHcI2N3rggc5Gg.jpeg,https://miro.medium.com/v2/resize:fit:679/1*VOGG10_elQyWEert_a0N5w.png,https://miro.medium.com/v2/resize:fill:20:20/1*U-kjsW7IZUobnoy1gAp1UQ.png,https://miro.medium.com/v2/resize:fit:679/1*cKrYCBxPQLLdx9T_ng0QWg.png,https://miro.medium.com/v2/resize:fill:20:20/1*O1a7bGEM5d6NagVVAA5-oQ.jpeg,https://miro.medium.com/v2/resize:fit:679/0*OCF5yvoPNUYCZ14L,https://miro.medium.com/v2/resize:fill:20:20/1*DlQS_Zi_MSa_18CAobfEEQ.jpeg
