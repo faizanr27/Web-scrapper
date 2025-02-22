@@ -175,13 +175,13 @@ async function giveWebsiteInfo(url) {
       </html>
     `;
 
-    await fs.writeFile("output.html", htmlContent);
+    // await fs.writeFile("output.html", htmlContent);
     content.push(extractedData.result1);
     console.log("succes 2")
 
     try {
       const textContent = `${extractedData.result1.title}\n\n${extractedData.result1.body}\n\n${extractedData.result1.imageUrls}`;
-      await fs.writeFile('webpage.txt', textContent, 'utf-8');
+      // await fs.writeFile('webpage.txt', textContent, 'utf-8');
 
       
       const prompt =  `You are an AI assistant that converts webpage content to markdown while filtering out unnecessary information. Please follow these guidelines:
@@ -207,8 +207,8 @@ console.log(summary)
       </html>
     `;
 
-    await fs.writeFile("markdown.html", htmlContent);
-    await fs.writeFile("markdown.md", summary);
+    // await fs.writeFile("markdown.html", htmlContent);
+    // await fs.writeFile("markdown.md", summary);
       console.log("Plain text with title saved successfully.");
     } catch (error) {
       console.error("Error saving file:", error);

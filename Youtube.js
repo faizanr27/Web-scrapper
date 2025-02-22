@@ -124,7 +124,7 @@ async function giveYoutubeInfo(link) {
         console.log(groupedTranscript.join("\n"));
 
         const finalText = `Title: ${title}\n\nDescription: ${description}\n\nTranscript:\n${groupedTranscript.join("\n")}`;
-        await fs.writeFile('transcript.txt', finalText, 'utf-8');
+        // await fs.writeFile('transcript.txt', finalText, 'utf-8');
         console.log("Transcript saved successfully.");
 
         console.log("All transcript segments:", groupedTranscript.join("\n"));
@@ -150,6 +150,6 @@ async function giveYoutubeInfo(link) {
 export default giveYoutubeInfo
 // Example usage:
 // (async () => {
-//     const websiteData = await giveWebsiteInfo("https://youtu.be/CfadZa96V-s?si=Fw9VxolMHGn3iPgJ");
+//     const websiteData = await giveYoutubeInfo("https://youtu.be/CfadZa96V-s?si=Fw9VxolMHGn3iPgJ");
 //     console.log("Website Data:", websiteData);
 // })();
